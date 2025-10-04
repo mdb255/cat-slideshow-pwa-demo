@@ -6,7 +6,7 @@ from sqlmodel import SQLModel, create_engine, Session
 from sqlmodel.pool import StaticPool
 
 from app.main import create_app
-from app import models
+from app.models import Todo, Cat, Slideshow
 
 @pytest.fixture
 def test_app() -> FastAPI:

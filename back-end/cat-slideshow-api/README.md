@@ -1,55 +1,222 @@
-# FastAPI + SQLModel + Postgres + Pytest + Alembic Starter
+# Cat Slideshow API
 
-Minimal, production-leaning baseline with migrations.
+A scalable FastAPI application for managing cats, slideshows, and todos with a clean, modular architecture.
 
-## Stack
-- FastAPI
-- SQLModel
-- Postgres (docker-compose)
-- Alembic (migrations)
-- Pytest
+## Features
 
-## Quickstart
+- **FastAPI**: Modern, fast web framework for building APIs
+- **SQLModel**: SQL databases in Python, designed for simplicity, compatibility, and robustness
+- **Alembic**: Database migration tool for SQLAlchemy
+- **uv**: Fast Python package installer and resolver
+- **Pytest**: Testing framework with async support
+- **Type hints**: Full type safety throughout the application
+- **Modular Architecture**: Scalable structure for adding new models and features
+- **CRUD Operations**: Base classes for consistent database operations
+- **Relationship Support**: Proper model relationships with foreign keys
 
-1) Start Postgres:
-```bash
-docker compose up -d
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── __init__.py
+│   ├── main.py              # FastAPI application
+│   ├── db.py                # Database configuration
+│   ├── settings.py          # Application settings
+│   ├── models/              # SQLModel models
+│   │   ├── __init__.py
+│   │   ├── base.py          # Base model classes
+│   │   ├── todo.py          # Todo model
+│   │   ├── cat.py           # Cat model
+│   │   └── slideshow.py     # Slideshow model
+│   ├── crud/                # CRUD operations
+│   │   ├── __init__.py
+│   │   ├── base.py          # Base CRUD class
+│   │   ├── todo.py          # Todo CRUD operations
+│   │   ├── cat.py           # Cat CRUD operations
+│   │   └── slideshow.py     # Slideshow CRUD operations
+│   └── api/                 # API routes
+│       ├── __init__.py
+│       ├── todos.py         # Todo endpoints
+│       ├── cats.py          # Cat endpoints
+│       └── slideshows.py    # Slideshow endpoints
+├── alembic/                 # Database migrations
+│   ├── versions/
+│   ├── env.py
+│   └── script.py.mako
+├── tests/                   # Test files
+│   ├── test_todos.py
+│   ├── test_cats.py
+│   └── test_slideshows.py
+└── pyproject.toml           # Project configuration
 ```
 
-2) Install deps with `uv`:
+## Quick Start
+
+1. **Start Postgres** (optional, can use SQLite):
+   ```bash
+   docker compose up -d
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   uv sync --all-extras --dev
+   ```
+
+3. **Set up the database**:
+   ```bash
+   # Create and run migrations
+   uv run alembic revision --autogenerate -m "Initial migration"
+   uv run alembic upgrade head
+   ```
+
+4. **Run the application**:
+   ```bash
+   uv run uvicorn app.main:app --reload --app-dir src
+   ```
+
+5. **View the API documentation**:
+   - OpenAPI docs: http://localhost:8000/docs
+   - ReDoc: http://localhost:8000/redoc
+
+6. **Run tests**:
+   ```bash
+   uv run pytest -q
+   ```
+
+## API Endpoints
+
+### Query Parameter Examples
+
+**Cats API with filtering:**
+- `GET /cats/` - Get all cats
+- `GET /cats/?breed=Persian` - Get Persian cats
+- `GET /cats/?min_age=2&max_age=5` - Get cats between 2-5 years old
+- `GET /cats/?search=fluffy` - Search for cats with "fluffy" in description
+- `GET /cats/?breed=Siamese&skip=10&limit=5` - Get 5 Siamese cats, skipping first 10
+
+### Todos
+- `POST /todos/` - Create a new todo
+- `GET /todos/` - List all todos
+- `GET /todos/{id}` - Get a specific todo
+- `PATCH /todos/{id}` - Update a todo
+- `DELETE /todos/{id}` - Delete a todo
+- `GET /todos/completed/` - Get completed todos
+- `GET /todos/pending/` - Get pending todos
+
+### Cats
+- `POST /cats/` - Create a new cat
+- `GET /cats/` - List all cats (with optional query parameters)
+  - `?breed={breed}` - Filter by cat breed
+  - `?min_age={age}&max_age={age}` - Filter by age range
+  - `?search={term}` - Search cats by description
+  - `?skip={number}&limit={number}` - Pagination
+- `GET /cats/{id}` - Get a specific cat
+- `PATCH /cats/{id}` - Update a cat
+- `DELETE /cats/{id}` - Delete a cat
+
+### Slideshows
+- `POST /slideshows/` - Create a new slideshow
+- `GET /slideshows/` - List all slideshows
+- `GET /slideshows/{id}` - Get a specific slideshow
+- `PATCH /slideshows/{id}` - Update a slideshow
+- `DELETE /slideshows/{id}` - Delete a slideshow
+- `GET /slideshows/cat/{cat_id}` - Get slideshows by cat
+- `GET /slideshows/search/{search_term}` - Search slideshows by title
+
+### System
+- `GET /` - Root endpoint with API information
+- `GET /healthz` - Application health status
+
+## Models
+
+### Todo
+- `id`: Primary key
+- `title`: Todo title
+- `completed`: Completion status
+- `created_at`: Creation timestamp
+- `updated_at`: Last update timestamp
+
+### Cat
+- `id`: Primary key
+- `name`: Cat name
+- `breed`: Cat breed (optional)
+- `age`: Cat age (optional)
+- `color`: Cat color (optional)
+- `description`: Cat description (optional)
+- `image_urls`: List of image URLs
+- `created_at`: Creation timestamp
+- `updated_at`: Last update timestamp
+
+### Slideshow
+- `id`: Primary key
+- `title`: Slideshow title
+- `description`: Slideshow description (optional)
+- `image_urls`: List of image URLs
+- `cat_id`: Foreign key to Cat (optional)
+- `created_at`: Creation timestamp
+- `updated_at`: Last update timestamp
+
+## Development
+
+### Running Tests
 ```bash
-uv sync --all-extras --dev
+uv run pytest
 ```
 
-3) Run database migrations (uses `.env` for `DATABASE_URL`):
+### Code Formatting
 ```bash
-# upgrade to head (includes initial todos table)
+uv run black .
+uv run isort .
+```
+
+### Type Checking
+```bash
+uv run mypy .
+```
+
+## Database Migrations
+
+### Create a new migration
+```bash
+uv run alembic revision --autogenerate -m "Description of changes"
+```
+
+### Apply migrations
+```bash
 uv run alembic upgrade head
 ```
 
-4) Run the API:
+### Rollback migration
 ```bash
-uv run uvicorn app.main:app --reload --app-dir src
-# http://127.0.0.1:8000/docs
+uv run alembic downgrade -1
 ```
 
-5) Run tests (SQLite in-memory for speed):
-```bash
-uv run pytest -q
+## Adding New Models
+
+The project is designed to be easily extensible. To add a new model:
+
+1. **Create the model** in `src/app/models/your_model.py`
+2. **Create CRUD operations** in `src/app/crud/your_model.py`
+3. **Create API endpoints** in `src/app/api/your_model.py`
+4. **Update imports** in the respective `__init__.py` files
+5. **Add router** to `src/app/main.py`
+6. **Create migration** with Alembic
+7. **Add tests** in `tests/test_your_model.py`
+
+## Configuration
+
+The application uses environment variables for configuration. Create a `.env` file in the project root:
+
+```env
+DATABASE_URL=sqlite:///./cat_slideshow.db
 ```
-
-## Making schema changes
-
-1) Edit your models in `src/app/models.py` (or new modules that import SQLModel).
-2) Autogenerate a migration:
-```bash
-uv run alembic revision --autogenerate -m "your message"
-uv run alembic upgrade head
-```
-
-Alembic is wired to `SQLModel.metadata` via `alembic/env.py` and reads the database URL from `.env` through `pydantic-settings`.
 
 ## Notes
 - We avoid `create_all()` at runtime; schema is owned by Alembic.
 - Tests still create tables directly against an in-memory SQLite engine.
-- Adminer is available at http://localhost:8080 for quick DB inspection.
+- Adminer is available at http://localhost:8080 for quick DB inspection (when using docker-compose).
+
+## License
+
+MIT
