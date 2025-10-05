@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from .db import init_db
-from .api import todos_router, cats_router, slideshows_router
+from .api import cats_router, slideshows_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -11,13 +11,12 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     app = FastAPI(
         title="Cat Slideshow API",
-        description="A scalable API for managing cats, slideshows, and todos",
+        description="A scalable API for managing cats and slideshows",
         version="1.0.0",
         lifespan=lifespan
     )
     
     # Include all routers
-    app.include_router(todos_router)
     app.include_router(cats_router)
     app.include_router(slideshows_router)
 

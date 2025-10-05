@@ -1,6 +1,6 @@
 # Cat Slideshow API
 
-A scalable FastAPI application for managing cats, slideshows, and todos with a clean, modular architecture.
+A scalable FastAPI application for managing cats and slideshows with a clean, modular architecture.
 
 ## Features
 
@@ -26,18 +26,15 @@ src/
 │   ├── models/              # SQLModel models
 │   │   ├── __init__.py
 │   │   ├── base.py          # Base model classes
-│   │   ├── todo.py          # Todo model
 │   │   ├── cat.py           # Cat model
 │   │   └── slideshow.py     # Slideshow model
 │   ├── crud/                # CRUD operations
 │   │   ├── __init__.py
 │   │   ├── base.py          # Base CRUD class
-│   │   ├── todo.py          # Todo CRUD operations
 │   │   ├── cat.py           # Cat CRUD operations
 │   │   └── slideshow.py     # Slideshow CRUD operations
 │   └── api/                 # API routes
 │       ├── __init__.py
-│       ├── todos.py         # Todo endpoints
 │       ├── cats.py          # Cat endpoints
 │       └── slideshows.py    # Slideshow endpoints
 ├── alembic/                 # Database migrations
@@ -45,7 +42,6 @@ src/
 │   ├── env.py
 │   └── script.py.mako
 ├── tests/                   # Test files
-│   ├── test_todos.py
 │   ├── test_cats.py
 │   └── test_slideshows.py
 └── pyproject.toml           # Project configuration
@@ -95,15 +91,6 @@ src/
 - `GET /cats/?search=fluffy` - Search for cats with "fluffy" in description
 - `GET /cats/?breed=Siamese&skip=10&limit=5` - Get 5 Siamese cats, skipping first 10
 
-### Todos
-- `POST /todos/` - Create a new todo
-- `GET /todos/` - List all todos
-- `GET /todos/{id}` - Get a specific todo
-- `PATCH /todos/{id}` - Update a todo
-- `DELETE /todos/{id}` - Delete a todo
-- `GET /todos/completed/` - Get completed todos
-- `GET /todos/pending/` - Get pending todos
-
 ### Cats
 - `POST /cats/` - Create a new cat
 - `GET /cats/` - List all cats (with optional query parameters)
@@ -129,13 +116,6 @@ src/
 - `GET /healthz` - Application health status
 
 ## Models
-
-### Todo
-- `id`: Primary key
-- `title`: Todo title
-- `completed`: Completion status
-- `created_at`: Creation timestamp
-- `updated_at`: Last update timestamp
 
 ### Cat
 - `id`: Primary key
