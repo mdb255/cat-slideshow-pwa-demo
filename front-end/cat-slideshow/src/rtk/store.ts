@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { catSlideshowApi } from './api/catSlideshowApi'
+import { catSlideshowApi } from './cat-slideshow-api'
 
 export const store = configureStore({
     reducer: {

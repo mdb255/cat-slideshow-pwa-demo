@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { Slideshow } from './slideshow-model'
-import { catSlideshowApi } from '../api/catSlideshowApi'
+import { catSlideshowApi } from '../cat-slideshow-api'
 
 // Slideshow slice state interface - only data, no UI state
 export interface SlideshowState {
