@@ -1,9 +1,20 @@
 import { Box, Typography, Container, Button } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 import { stylesWithLabels } from '../../modules/util/styles-util'
 import theme from '../../modules/theme/theme'
 
 
 function WelcomeScreen() {
+    const navigate = useNavigate()
+
+    const handleSetupDataClick = () => {
+        navigate('/setup-data')
+    }
+
+    const handleViewSlideshowsClick = () => {
+        navigate('/view-slideshows')
+    }
+
     return (
         <Container sx={styles.welcomeContainer} maxWidth="lg">
             <Box sx={styles.welcomeHeader}>
@@ -17,10 +28,10 @@ function WelcomeScreen() {
             </Box>
 
             <Box sx={styles.welcomeActions}>
-                <Button variant="outlined" size='large'>
+                <Button variant="outlined" size='large' onClick={handleSetupDataClick}>
                     Setup Data
                 </Button>
-                <Button variant="contained" size='large'>
+                <Button variant="contained" size='large' onClick={handleViewSlideshowsClick}>
                     View Slideshows
                 </Button>
             </Box>

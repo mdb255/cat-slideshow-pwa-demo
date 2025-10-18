@@ -1,10 +1,10 @@
-import WelcomeScreen from './components/welcome-screen/welcome-screen'
+import Router from './modules/router/router.tsx'
 import PWABadge from './PWABadge.tsx'
 
 function App() {
     return (
         <>
-            <WelcomeScreen />
+            <Router />
             <PWABadge />
         </>
     )
