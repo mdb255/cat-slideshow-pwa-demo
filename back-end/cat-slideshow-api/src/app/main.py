@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from .db import init_db
 from .api import cats_router, slideshows_router
 
@@ -14,6 +15,17 @@ def create_app() -> FastAPI:
         description="A scalable API for managing cats and slideshows",
         version="1.0.0",
         lifespan=lifespan
+    )
+    
+    # Configure CORS
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:5173",  # Vite dev server
+        ],
+        allow_credentials=True,
+        allow_methods=["*"],  # Allow all HTTP methods
+        allow_headers=["*"],  # Allow all headers
     )
     
     # Include all routers
