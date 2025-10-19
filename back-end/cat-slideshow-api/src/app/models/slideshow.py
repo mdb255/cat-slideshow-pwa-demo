@@ -20,15 +20,15 @@ class SlideshowBase(SQLModel):
 class Slideshow(SlideshowBase, BaseModel, table=True):
     """Slideshow database model."""
     image_urls: List[str] = Field(sa_column=Column(ARRAY(String)), default_factory=list)
-    cat_id: Optional[int] = Field(default=None, foreign_key="cat.id")
+    cat_id: int = Field(foreign_key="cat.id")
     
     # Relationships
-    cat: Optional["Cat"] = Relationship(back_populates="slideshows")
+    cat: "Cat" = Relationship(back_populates="slideshows")
 
 
 class SlideshowCreate(SlideshowBase):
     """Slideshow creation model."""
-    cat_id: Optional[int] = None
+    cat_id: int
 
 
 class SlideshowUpdate(SQLModel):
@@ -42,6 +42,6 @@ class SlideshowUpdate(SQLModel):
 class SlideshowRead(SlideshowBase):
     """Slideshow read model."""
     id: int
-    cat_id: Optional[int]
+    cat_id: int
     created_at: datetime
     updated_at: datetime

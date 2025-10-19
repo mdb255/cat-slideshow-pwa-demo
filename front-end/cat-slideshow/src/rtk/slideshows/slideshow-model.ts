@@ -5,7 +5,7 @@ export interface Slideshow {
     title: string
     description?: string
     image_urls: string[]
-    cat_id?: number
+    cat_id: number
     created_at: string
     updated_at: string
 }
@@ -14,7 +14,7 @@ export interface SlideshowCreate {
     title: string
     description?: string
     image_urls: string[]
-    cat_id?: number
+    cat_id: number
 }
 
 export interface SlideshowUpdate {
