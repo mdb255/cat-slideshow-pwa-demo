@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import type { Cat } from './cat-model'
 import { catSlideshowApi } from '../cat-slideshow-api'
 
@@ -82,9 +82,10 @@ export const catSlice = createSlice({
             .addMatcher(
                 catSlideshowApi.endpoints.deleteCat.matchFulfilled,
                 (state, action) => {
-                    // The API doesn't return the deleted cat, so we need to track it differently
-                    // For now, we'll rely on cache invalidation to refetch data
-                    // This could be enhanced by storing the deleted ID in the action meta
+                    const catId = action.meta.arg.originalArgs
+                    if (catId) {
+                        delete state.catsById[catId]
+                    }
                 }
             )
     },

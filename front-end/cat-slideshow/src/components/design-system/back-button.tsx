@@ -21,8 +21,8 @@ function BackButton({ tooltip = 'Go back', onClick }: BackButtonProps) {
 
     return (
         <Tooltip title={tooltip}>
-            <IconButton onClick={handleClick} size="large" sx={styles.button}>
-                <ArrowBack sx={styles.icon} />
+            <IconButton onClick={handleClick} sx={styles.button}>
+                <ArrowBack />
             </IconButton>
         </Tooltip>
     )
@@ -31,9 +31,6 @@ function BackButton({ tooltip = 'Go back', onClick }: BackButtonProps) {
 let styles = {
     button: {
         color: 'white',
-    },
-    icon: {
-        fontSize: '2rem',
     },
 }
 
