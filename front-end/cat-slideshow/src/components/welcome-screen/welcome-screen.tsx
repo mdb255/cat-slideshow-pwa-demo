@@ -25,6 +25,12 @@ function WelcomeScreen() {
                 >
                     Welcome to Cat Slideshow Demo
                 </Typography>
+                <Box
+                    component="img"
+                    src="https://cat-slideshow-demo.s3.us-east-1.amazonaws.com/cats_splash.png"
+                    alt="Cat Slideshow Placeholder"
+                    sx={styles.placeholderImage}
+                />
             </Box>
 
             <Box sx={styles.welcomeActions}>
@@ -53,6 +59,16 @@ let styles = {
     },
     welcomeHeader: {
         marginBottom: theme.spacing(6),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: theme.spacing(3),
+    },
+    placeholderImage: {
+        maxWidth: '100%',
+        height: 'auto',
+        borderRadius: '8px',
+        // boxShadow: theme.shadows[3],
     },
     welcomeActions: {
         display: 'flex',

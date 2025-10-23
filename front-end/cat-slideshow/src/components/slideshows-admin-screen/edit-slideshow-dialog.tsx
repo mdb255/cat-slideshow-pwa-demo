@@ -16,6 +16,7 @@ import {
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
 import type { SlideshowCreate, SlideshowUpdate } from '../../rtk/slideshows/slideshow-model'
 import ConfirmCloseDialog from '../reusable/confirm-close-dialog'
+import ImagePicker from '../reusable/image-picker'
 import { stylesWithLabels } from '../../modules/util/styles-util'
 import theme from '../../modules/theme/theme'
 
@@ -33,6 +34,7 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
         skip: !isEditMode,
     })
     const { data: cats, isLoading: isLoadingCats } = catSlideshowApi.useGetCatsQuery({})
+    const { data: catImages, isLoading: isLoadingCatImages } = catSlideshowApi.useGetCatImagesQuery()
     const [createSlideshow, { isLoading: isCreating }] = catSlideshowApi.useCreateSlideshowMutation()
     const [updateSlideshow, { isLoading: isUpdating }] = catSlideshowApi.useUpdateSlideshowMutation()
 
@@ -40,9 +42,7 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [catId, setCatId] = useState<number | ''>('')
-    const [imageUrl1, setImageUrl1] = useState('')
-    const [imageUrl2, setImageUrl2] = useState('')
-    const [imageUrl3, setImageUrl3] = useState('')
+    const [selectedImageUrls, setSelectedImageUrls] = useState<string[]>([])
 
     // Track if form is dirty
     const [isDirty, setIsDirty] = useState(false)
@@ -55,18 +55,14 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
                 setTitle(slideshow.title)
                 setDescription(slideshow.description || '')
                 setCatId(slideshow.cat_id)
-                setImageUrl1(slideshow.image_urls[0] || '')
-                setImageUrl2(slideshow.image_urls[1] || '')
-                setImageUrl3(slideshow.image_urls[2] || '')
+                setSelectedImageUrls(slideshow.image_urls)
                 setIsDirty(false)
             } else if (!isEditMode) {
                 // Reset form for create mode
                 setTitle('')
                 setDescription('')
                 setCatId('')
-                setImageUrl1('')
-                setImageUrl2('')
-                setImageUrl3('')
+                setSelectedImageUrls([])
                 setIsDirty(false)
             }
         }
@@ -81,6 +77,11 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
 
     const handleCatChange = (e: any) => {
         setCatId(e.target.value)
+        setIsDirty(true)
+    }
+
+    const handleImageUrlsChange = (urls: string[]) => {
+        setSelectedImageUrls(urls)
         setIsDirty(true)
     }
 
@@ -103,14 +104,11 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
 
     const handleSubmit = async () => {
         try {
-            // Filter out empty image URLs
-            const imageUrls = [imageUrl1, imageUrl2, imageUrl3].filter(url => url.trim() !== '')
-
             const slideshowData: SlideshowCreate | SlideshowUpdate = {
                 title,
                 description: description || undefined,
                 cat_id: catId as number,
-                image_urls: imageUrls,
+                image_urls: selectedImageUrls,
             }
 
             if (isEditMode) {
@@ -126,7 +124,7 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
         }
     }
 
-    const isLoading = isLoadingSlideshow || isLoadingCats || isCreating || isUpdating
+    const isLoading = isLoadingSlideshow || isLoadingCats || isLoadingCatImages || isCreating || isUpdating
     const canSubmit = title.trim() !== '' && catId !== '' && !isLoading
 
     return (
@@ -173,29 +171,10 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
                                     ))}
                                 </Select>
                             </FormControl>
-                            <TextField
-                                label="Image URL 1"
-                                fullWidth
-                                value={imageUrl1}
-                                onChange={handleFieldChange(setImageUrl1)}
-                                margin="normal"
-                                placeholder="https://example.com/image1.jpg"
-                            />
-                            <TextField
-                                label="Image URL 2"
-                                fullWidth
-                                value={imageUrl2}
-                                onChange={handleFieldChange(setImageUrl2)}
-                                margin="normal"
-                                placeholder="https://example.com/image2.jpg"
-                            />
-                            <TextField
-                                label="Image URL 3"
-                                fullWidth
-                                value={imageUrl3}
-                                onChange={handleFieldChange(setImageUrl3)}
-                                margin="normal"
-                                placeholder="https://example.com/image3.jpg"
+                            <ImagePicker
+                                availableImageUrls={catImages || []}
+                                selectedImageUrls={selectedImageUrls}
+                                onChange={handleImageUrlsChange}
                             />
                         </Box>
                     )}
