@@ -68,7 +68,6 @@ let styles = {
         maxWidth: '100%',
         height: 'auto',
         borderRadius: '8px',
-        // boxShadow: theme.shadows[3],
     },
     welcomeActions: {
         display: 'flex',
