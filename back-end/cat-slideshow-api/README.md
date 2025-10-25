@@ -13,6 +13,7 @@ A scalable FastAPI application for managing cats and slideshows with a clean, mo
 - **Modular Architecture**: Scalable structure for adding new models and features
 - **CRUD Operations**: Base classes for consistent database operations
 - **Relationship Support**: Proper model relationships with foreign keys
+- **AWS Cognito Authentication**: JWT-based authentication with Cognito integration
 
 ## Project Structure
 
@@ -190,7 +191,60 @@ The application uses environment variables for configuration. Create a `.env` fi
 
 ```env
 DATABASE_URL=sqlite:///./cat_slideshow.db
+
+# AWS S3 Configuration (for cat images)
+CAT_IMAGES_AWS_ACCESS_KEY_ID=your_access_key
+CAT_IMAGES_AWS_SECRET_ACCESS_KEY=your_secret_key
+CAT_IMAGES_BUCKET_NAME=cat-slideshow-demo
+
+# AWS Cognito Configuration (for authentication)
+USER_POOL_ID=your_user_pool_id
+APP_CLIENT_ID=your_app_client_id
+AWS_REGION=us-east-1
+JWKS_CACHE_TTL=3600  # Optional, defaults to 3600 seconds (1 hour)
 ```
+
+## Authentication
+
+The API uses AWS Cognito for JWT-based authentication. Some endpoints require a valid access token in the Authorization header.
+
+### Required Environment Variables
+
+- `USER_POOL_ID`: Your AWS Cognito User Pool ID
+- `APP_CLIENT_ID`: Your Cognito App Client ID
+- `AWS_REGION`: AWS region where your Cognito User Pool is located
+- `JWKS_CACHE_TTL`: Cache TTL for JWKs (optional, defaults to 3600 seconds)
+
+### Obtaining an Access Token
+
+1. **Set up AWS Cognito User Pool**:
+   - Create a User Pool in AWS Console
+   - Create an App Client
+   - Configure the authentication flow (e.g., USER_PASSWORD_AUTH)
+
+2. **Get access token** using AWS CLI or SDK:
+
+```bash
+aws cognito-idp initiate-auth \
+  --auth-flow USER_PASSWORD_AUTH \
+  --client-id YOUR_APP_CLIENT_ID \
+  --auth-parameters USERNAME=your_username,PASSWORD=your_password
+```
+
+3. **Use the token** in API requests:
+
+```bash
+curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  http://localhost:8000/cat-images/
+```
+
+### Protected Endpoints
+
+- `/cat-images/` - Requires authentication
+
+### Optional Authentication
+
+Some endpoints may accept optional authentication using the `get_current_user_optional` dependency. This allows endpoints to work for both authenticated and unauthenticated users.
 
 ## Notes
 - We avoid `create_all()` at runtime; schema is owned by Alembic.

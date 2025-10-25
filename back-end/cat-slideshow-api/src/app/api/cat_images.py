@@ -3,8 +3,9 @@
 from typing import List
 import boto3
 from botocore.exceptions import ClientError, BotoCoreError
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from ..settings import settings
+from ..auth import get_current_user
 
 router = APIRouter(
     prefix="/cat-images",
@@ -13,9 +14,13 @@ router = APIRouter(
 
 
 @router.get("/", response_model=List[str])
-def list_cat_images() -> List[str]:
+def list_cat_images(
+    current_user: dict = Depends(get_current_user)
+) -> List[str]:
     """
     List all cat image URLs from the S3 bucket.
+    
+    Requires valid AWS Cognito access token in Authorization header.
     
     Returns:
         List of object URLs in the format: https://{bucket}.s3.amazonaws.com/{key}
