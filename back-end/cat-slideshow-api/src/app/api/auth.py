@@ -114,24 +114,26 @@ def resume(db: Session = Depends(get_session), request: Request = None):
     
     # Use refresh token to get new tokens
     cognito_response = cognito_refresh_session(refresh_token)
-    
-    access_token = cognito_response.get("AuthenticationResult", {}).get("AccessToken")
-    new_refresh_token = cognito_response.get("AuthenticationResult", {}).get("RefreshToken")
-    expires_in = cognito_response.get("AuthenticationResult", {}).get("ExpiresIn", 3600)
-    
-    if not access_token or not new_refresh_token:
-        raise HTTPException(status_code=500, detail="Failed to get tokens from Cognito")
-    
+
+    auth_result = cognito_response.get("AuthenticationResult", {}) or {}
+    access_token = auth_result.get("AccessToken")
+    new_refresh_token = auth_result.get("RefreshToken")
+    expires_in = auth_result.get("ExpiresIn", 3600)
+
+    if not access_token:
+        raise HTTPException(status_code=500, detail="Failed to get access token from Cognito")
+
     # Create response
     response = Response(content=f'{{"access_token":"{access_token}","access_token_expires_in_ms":{expires_in * 1000}}}')
     response.headers["Content-Type"] = "application/json"
     
-    # Set new session-resume cookie with updated refresh token
-    response.set_cookie(
-        key=settings.session_resume_cookie_name,
-        value=new_refresh_token,
-        **get_cookie_kwargs()
-    )
+    # Only update the cookie if Cognito returned a new refresh token; otherwise keep the existing one
+    if new_refresh_token:
+        response.set_cookie(
+            key=settings.session_resume_cookie_name,
+            value=new_refresh_token,
+            **get_cookie_kwargs()
+        )
     
     return response
 

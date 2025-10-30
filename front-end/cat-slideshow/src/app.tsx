@@ -1,10 +1,13 @@
 import Router from './modules/router/router.tsx'
 import PWABadge from './PWABadge.tsx'
+import AuthInitializer from './components/auth-initializer/auth-initializer'
 
 function App() {
     return (
         <>
-            <Router />
+            <AuthInitializer>
+                <Router />
+            </AuthInitializer>
             <PWABadge />
         </>
     )
