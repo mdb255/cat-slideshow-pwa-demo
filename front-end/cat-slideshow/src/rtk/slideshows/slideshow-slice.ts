@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import type { Slideshow } from './slideshow-model'
 import { catSlideshowApi } from '../cat-slideshow-api'
 
