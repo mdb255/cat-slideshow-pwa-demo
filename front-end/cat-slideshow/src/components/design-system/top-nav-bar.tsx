@@ -5,18 +5,19 @@ import { stylesWithLabels } from '../../modules/util/styles-util'
 
 interface TopNavBarProps {
     children?: ReactNode
+    showBackButton?: boolean
 }
 
-function TopNavBar({ children }: TopNavBarProps) {
+function TopNavBar({ children, showBackButton = true }: TopNavBarProps) {
     return (
-        <AppBar position="static" elevation={1}>
+        <AppBar position="fixed" elevation={1}>
             <Toolbar>
-                <BackButton />
+                {showBackButton && <BackButton />}
                 <Box sx={styles.spacer} />
                 {children && (
-                <Box sx={styles.actionsContainer}>
-                    {children}
-                </Box>
+                    <Box sx={styles.actionsContainer}>
+                        {children}
+                    </Box>
                 )}
             </Toolbar>
         </AppBar>

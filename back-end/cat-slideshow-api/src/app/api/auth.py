@@ -141,8 +141,12 @@ def resume(db: Session = Depends(get_session), request: Request = None):
 @router.post("/logout")
 def logout(response: Response):
     """Logout user by clearing session-resume cookie."""
+    cookie_kwargs = {}
+    if settings.app_env != "local" and settings.app_domain:
+        cookie_kwargs["domain"] = f".{settings.app_domain}"
     response.delete_cookie(
         key=settings.session_resume_cookie_name,
-        **get_cookie_kwargs()
+        path="/",
+        **cookie_kwargs,
     )
     return {"message": "Logged out successfully"}
