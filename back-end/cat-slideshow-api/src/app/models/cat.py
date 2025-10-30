@@ -17,13 +17,14 @@ class CatBase(SQLModel):
 
 class Cat(CatBase, BaseModel, table=True):
     """Cat database model."""
+    user_id: int = Field(foreign_key="user.id", index=True)
     
     # Relationships
     slideshows: List["Slideshow"] = Relationship(back_populates="cat")
 
 
 class CatCreate(CatBase):
-    """Cat creation model."""
+    """Cat creation model (user_id is server-assigned)."""
     pass
 
 
@@ -39,6 +40,7 @@ class CatUpdate(SQLModel):
 class CatRead(CatBase):
     """Cat read model."""
     id: int
+    user_id: int
     created_at: datetime
     updated_at: datetime
 
