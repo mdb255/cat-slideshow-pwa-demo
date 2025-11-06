@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .db import init_db
 from .api import cats_router, slideshows_router, cat_images_router, auth_router
+from .settings import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -20,10 +21,7 @@ def create_app() -> FastAPI:
     # Configure CORS
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            # "http://localhost:5173",  # Vite dev server
-            "http://127.0.0.1:5173",  # alternate
-        ],
+        allow_origins=settings.cors_origins_list,
         allow_credentials=True,
         allow_methods=["*"],  # Allow all HTTP methods
         allow_headers=["*"],  # Allow all headers

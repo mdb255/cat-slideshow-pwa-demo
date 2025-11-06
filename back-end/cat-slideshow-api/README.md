@@ -187,22 +187,8 @@ The project is designed to be easily extensible. To add a new model:
 
 ## Configuration
 
-The application uses environment variables for configuration. Create a `.env` file in the project root:
+The application uses environment variables for configuration. Create a `.env` file in the project root (see `env.example` for a template):
 
-```env
-DATABASE_URL=sqlite:///./cat_slideshow.db
-
-# AWS S3 Configuration (for cat images)
-CAT_IMAGES_AWS_ACCESS_KEY_ID=your_access_key
-CAT_IMAGES_AWS_SECRET_ACCESS_KEY=your_secret_key
-CAT_IMAGES_BUCKET_NAME=cat-slideshow-demo
-
-# AWS Cognito Configuration (for authentication)
-USER_POOL_ID=your_user_pool_id
-APP_CLIENT_ID=your_app_client_id
-AWS_REGION=us-east-1
-JWKS_CACHE_TTL=3600  # Optional, defaults to 3600 seconds (1 hour)
-```
 
 ## Authentication
 
@@ -237,14 +223,6 @@ aws cognito-idp initiate-auth \
 curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   http://localhost:8000/cat-images/
 ```
-
-### Protected Endpoints
-
-- `/cat-images/` - Requires authentication
-
-### Optional Authentication
-
-Some endpoints may accept optional authentication using the `get_current_user_optional` dependency. This allows endpoints to work for both authenticated and unauthenticated users.
 
 ## Notes
 - We avoid `create_all()` at runtime; schema is owned by Alembic.

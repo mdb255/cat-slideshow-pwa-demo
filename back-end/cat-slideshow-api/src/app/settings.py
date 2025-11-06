@@ -18,6 +18,12 @@ class Settings(BaseSettings):
     app_domain: Optional[str] = None  # for cookie domain
     session_resume_cookie_name: str = "cat-slideshow.session-resume"
     session_resume_cookie_ttl: int = 2592000  # 30 days in seconds
+    cors_origins: str = "http://127.0.0.1:5173"  # comma-separated list of allowed origins
+    
+    @property
+    def cors_origins_list(self) -> list[str]:
+        """Parse comma-separated CORS origins into a list."""
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
     model_config = SettingsConfigDict(
         env_file=".env",
