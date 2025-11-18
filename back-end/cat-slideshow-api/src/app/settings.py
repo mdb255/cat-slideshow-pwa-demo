@@ -2,7 +2,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 
 class Settings(BaseSettings):
-    database_url: str
+    # Database URLs
+    # - runtime_db_url: used by the FastAPI app at runtime
+    # - migrations_db_url: used only by Alembic migrations
+    runtime_db_url: str
+    migrations_db_url: str
     cat_images_aws_access_key_id: str
     cat_images_aws_secret_access_key: str
     cat_images_bucket_name: str = "cat-slideshow-demo"
