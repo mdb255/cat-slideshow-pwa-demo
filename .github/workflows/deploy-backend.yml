@@ -48,8 +48,8 @@ jobs:
     - name: Load build-time parameters from SSM
       id: ssm
       run: |
-        echo "DATABASE_URL=$(aws ssm get-parameter \
-          --name /cat-slideshow/prod/DATABASE_URL \
+        echo "MIGRATIONS_DB_URL=$(aws ssm get-parameter \
+          --name /cat-slideshow/prod/MIGRATIONS_DB_URL \
           --with-decryption \
           --query 'Parameter.Value' --output text)" >> "$GITHUB_ENV"
 
@@ -61,7 +61,7 @@ jobs:
     - name: Run database migrations
       working-directory: back-end/cat-slideshow-api
       env:
-        DATABASE_URL: ${{ env.DATABASE_URL }}
+        MIGRATIONS_DB_URL: ${{ env.MIGRATIONS_DB_URL }}
       run: uv run alembic upgrade head
 
     - name: Login to Amazon ECR
