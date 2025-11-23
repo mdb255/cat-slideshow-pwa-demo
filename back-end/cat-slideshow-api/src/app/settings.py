@@ -3,10 +3,10 @@ from typing import Optional
 
 class Settings(BaseSettings):
     # Database URLs
-    # - runtime_db_url: used by the FastAPI app at runtime
-    # - migrations_db_url: used only by Alembic migrations
+    # - runtime_db_url: used by the FastAPI app at runtime (required)
+    # - migrations_db_url: used only by Alembic migrations (optional for app boot, required for migrations)
     runtime_db_url: str
-    migrations_db_url: str
+    migrations_db_url: Optional[str] = None
     cat_images_aws_access_key_id: str
     cat_images_aws_secret_access_key: str
     cat_images_bucket_name: str = "cat-slideshow-demo"
@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     # AWS Cognito settings
     user_pool_id: str
     app_client_id: str
-    aws_region: str
+    aws_region: str = "us-east-1"
     jwks_cache_ttl: int = 3600  # 1 hour in seconds
     
     # Application settings
