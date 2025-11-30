@@ -48,15 +48,24 @@ jobs:
     - name: Load build-time parameters from SSM
       id: ssm
       run: |
-        echo "MIGRATIONS_DB_URL=$(aws ssm get-parameter \
-          --name /cat-slideshow/prod/MIGRATIONS_DB_URL \
-          --with-decryption \
-          --query 'Parameter.Value' --output text)" >> "$GITHUB_ENV"
-
-        echo "APPRUNNER_SERVICE_ARN=$(aws ssm get-parameter \
-          --name /cat-slideshow/prod/APPRUNNER_SERVICE_ARN \
-          --query 'Parameter.Value' --output text)" >> "$GITHUB_ENV"
-      # If APPRUNNER_SERVICE_ARN isn't secret, you can hardcode it and skip this.
+        SSM_PREFIX="/cat-slideshow/prod"
+        PARAMS=(
+          "MIGRATIONS_DB_URL"
+          "RUNTIME_DB_URL"
+          "CAT_IMAGES_AWS_ACCESS_KEY_ID"
+          "CAT_IMAGES_AWS_SECRET_ACCESS_KEY"
+          "USER_POOL_ID"
+          "APP_CLIENT_ID"
+          "APPRUNNER_SERVICE_ARN"
+        )
+        
+        for param in "${PARAMS[@]}"; do
+          value=$(aws ssm get-parameter \
+            --name "${SSM_PREFIX}/${param}" \
+            --with-decryption \
+            --query 'Parameter.Value' --output text)
+          echo "${param}=${value}" >> "$GITHUB_ENV"
+        done
 
     - name: Run database migrations
       working-directory: back-end/cat-slideshow-api
