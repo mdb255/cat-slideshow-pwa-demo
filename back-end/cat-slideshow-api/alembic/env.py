@@ -17,12 +17,17 @@ try:
 except Exception as e:
     raise
 
+# Default DB schema for this project
+DEFAULT_SCHEMA = "app"
+
 # this is the Alembic Config object, which provides access to the values within the .ini file in use.
 config = context.config
 
-# If DATABASE_URL env var is set (or in .env via pydantic-settings), use it
-if settings and getattr(settings, "database_url", None):
-    config.set_main_option("sqlalchemy.url", settings.database_url)
+# Require MIGRATIONS_DB_URL for Alembic; it must always be set
+if not settings or not getattr(settings, "migrations_db_url", None):
+    raise RuntimeError("MIGRATIONS_DB_URL must be set for Alembic migrations.")
+
+config.set_main_option("sqlalchemy.url", settings.migrations_db_url)
 
 # Interpret the config file for Python logging.
 if config.config_file_name is not None:
@@ -39,6 +44,7 @@ def run_migrations_offline():
         target_metadata=target_metadata,
         literal_binds=True,
         compare_type=True,
+        version_table_schema=DEFAULT_SCHEMA,
     )
 
     with context.begin_transaction():
@@ -54,7 +60,10 @@ def run_migrations_online():
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata, compare_type=True
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,
+            version_table_schema=DEFAULT_SCHEMA,
         )
 
         with context.begin_transaction():

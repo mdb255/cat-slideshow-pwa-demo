@@ -1,0 +1,4 @@
+---
+alwaysApply: true
+- When adding styles to MUI components, always create a styles block using stylesWithLabels. Never define inline.
+---

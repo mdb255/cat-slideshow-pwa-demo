@@ -1,0 +1,7 @@
+---
+description: Performing tasks in the front-end project
+alwaysApply: false
+
+- Follow tech stack guidelines in fe-tech-stack for the front-end project
+- Follow coding conventions in fe-coding-conventions.md for the front-end project
+---
