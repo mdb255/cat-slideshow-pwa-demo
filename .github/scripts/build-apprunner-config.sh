@@ -26,15 +26,16 @@ for name in "${PARAM_NAMES[@]}"; do
   FULL_PATHS+=("${SSM_PREFIX}/${name}")
 done
 
-# Fetch all parameters and build secrets array
+# Fetch all parameters and build secrets dictionary (not array)
+# Convert from array of {Name, ARN} to dictionary {Name: ARN}
 SECRETS=$(aws ssm get-parameters \
   --names "${FULL_PATHS[@]}" \
   --query 'Parameters[].{Name:Name,ARN:ARN}' \
   --output json | \
   jq 'map({
-    Name: (.Name | split("/")[-1]),
-    ValueFrom: .ARN
-  })')
+    key: (.Name | split("/")[-1]),
+    value: .ARN
+  }) | from_entries')
 
 # Build full App Runner source configuration
 jq -n \
