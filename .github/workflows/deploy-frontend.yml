@@ -1,0 +1,112 @@
+name: Deploy Frontend to AWS S3/CloudFront
+
+on:
+  push:
+    branches: [ main-fe ] # For real apps, put BE/FE into separate repos
+    paths:
+      - 'front-end/**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  ROLE_ARN: arn:aws:iam::776991920768:role/cat_slideshow_deploy
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # Required for OIDC
+
+    defaults:
+      run:
+        working-directory: front-end/cat-slideshow
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: gha-deploy-frontend
+
+      # --- Build-time secrets ---
+      # Pull from SSM Parameter Store (SecureString recommended)
+      - name: Load build-time parameters from SSM
+        id: ssm
+        run: |
+          SSM_PREFIX="/cat-slideshow/prod"
+          PARAMS=(
+            "PWA_S3_BUCKET"
+            "PWA_CLOUDFRONT_DISTRIBUTION_ID"
+            "PWA_API_BASE"
+          )
+          
+          for param in "${PARAMS[@]}"; do
+            value=$(aws ssm get-parameter \
+              --name "${SSM_PREFIX}/${param}" \
+              --with-decryption \
+              --query 'Parameter.Value' --output text)
+            echo "${param}=${value}" >> "$GITHUB_ENV"
+          done
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: front-end/cat-slideshow/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build with production API URL
+        env:
+          VITE_API_BASE: ${{ env.PWA_API_BASE }}
+        run: pnpm run build
+
+      # Upload hashed assets / everything else with long cache
+      - name: Sync assets (1y cache)
+        env:
+          PWA_S3_BUCKET: ${{ env.PWA_S3_BUCKET }}
+        run: |
+          aws s3 sync dist s3://${PWA_S3_BUCKET} \
+            --delete \
+            --exclude "index.html" \
+            --exclude "sw.js" \
+            --cache-control "public,max-age=31536000,immutable" \
+            --metadata-directive REPLACE
+
+      # Upload service worker with no-store
+      - name: Upload sw.js (no-store)
+        env:
+          PWA_S3_BUCKET: ${{ env.PWA_S3_BUCKET }}
+        run: |
+          aws s3 cp dist/sw.js s3://${PWA_S3_BUCKET}/sw.js \
+            --cache-control "no-store" \
+            --content-type "application/javascript"
+
+      # Upload index.html with no-store
+      - name: Upload index.html (no-store)
+        env:
+          PWA_S3_BUCKET: ${{ env.PWA_S3_BUCKET }}
+        run: |
+          aws s3 cp dist/index.html s3://${PWA_S3_BUCKET}/index.html \
+            --cache-control "no-store" \
+            --content-type "text/html; charset=utf-8"
+
+      - name: Invalidate CloudFront
+        env:
+          PWA_CLOUDFRONT_DISTRIBUTION_ID: ${{ env.PWA_CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${PWA_CLOUDFRONT_DISTRIBUTION_ID}" \
+            --paths "/index.html" "/sw.js"
