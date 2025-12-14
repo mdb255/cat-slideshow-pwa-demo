@@ -2,7 +2,7 @@ name: Deploy Frontend to AWS S3/CloudFront
 
 on:
   push:
-    branches: [ main-fe ] # For real apps, put BE/FE into separate repos
+    branches: [ main ]
     paths:
       - 'front-end/**'
   workflow_dispatch:
