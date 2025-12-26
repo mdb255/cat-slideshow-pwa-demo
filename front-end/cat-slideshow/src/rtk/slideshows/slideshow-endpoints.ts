@@ -12,7 +12,7 @@ import type {
 export const getSlideshowEndpoints = (builder: EndpointBuilder<any, any, any>) => ({
     getSlideshows: builder.query<Slideshow[], SlideshowsQueryParams>({
         query: (params: SlideshowsQueryParams) => ({
-            url: 'slideshows',
+            url: 'slideshows/',
             params,
         }),
         providesTags: (result: Slideshow[] | undefined) =>
@@ -25,7 +25,7 @@ export const getSlideshowEndpoints = (builder: EndpointBuilder<any, any, any>) =
     }),
 
     getSlideshow: builder.query<Slideshow, number>({
-        query: (id: number) => `slideshows/${id}`,
+        query: (id: number) => `slideshows/${id}/`,
         providesTags: (result: Slideshow | undefined, error: any, id: number) => {
             void result; void error
             return [{ type: 'Slideshow', id }]
@@ -34,7 +34,7 @@ export const getSlideshowEndpoints = (builder: EndpointBuilder<any, any, any>) =
 
     createSlideshow: builder.mutation<Slideshow, SlideshowCreate>({
         query: (newSlideshow: SlideshowCreate) => ({
-            url: 'slideshows',
+            url: 'slideshows/',
             method: 'POST',
             body: newSlideshow,
         }),
@@ -43,7 +43,7 @@ export const getSlideshowEndpoints = (builder: EndpointBuilder<any, any, any>) =
 
     updateSlideshow: builder.mutation<Slideshow, { id: number; updates: SlideshowUpdate }>({
         query: ({ id, updates }: { id: number; updates: SlideshowUpdate }) => ({
-            url: `slideshows/${id}`,
+            url: `slideshows/${id}/`,
             method: 'PATCH',
             body: updates,
         }),
@@ -55,7 +55,7 @@ export const getSlideshowEndpoints = (builder: EndpointBuilder<any, any, any>) =
 
     deleteSlideshow: builder.mutation<void, number>({
         query: (id: number) => ({
-            url: `slideshows/${id}`,
+            url: `slideshows/${id}/`,
             method: 'DELETE',
         }),
         invalidatesTags: (result: void | undefined, error: any, id: number) => {
@@ -69,7 +69,7 @@ export const getSlideshowEndpoints = (builder: EndpointBuilder<any, any, any>) =
 
     getSlideshowsByCat: builder.query<Slideshow[], SlideshowsByCatParams>({
         query: ({ cat_id, ...params }: SlideshowsByCatParams) => ({
-            url: `slideshows/cat/${cat_id}`,
+            url: `slideshows/cat/${cat_id}/`,
             params,
         }),
         providesTags: (result: Slideshow[] | undefined, error: any, { cat_id }: SlideshowsByCatParams) => {
@@ -82,7 +82,7 @@ export const getSlideshowEndpoints = (builder: EndpointBuilder<any, any, any>) =
 
     searchSlideshows: builder.query<Slideshow[], SearchSlideshowsParams>({
         query: ({ search_term, ...params }: SearchSlideshowsParams) => ({
-            url: `slideshows/search/${search_term}`,
+            url: `slideshows/search/${search_term}/`,
             params,
         }),
         providesTags: (result: Slideshow[] | undefined, error: any, { search_term }: SearchSlideshowsParams) => {

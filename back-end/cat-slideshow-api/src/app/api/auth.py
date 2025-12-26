@@ -45,21 +45,21 @@ class AuthResponse(BaseModel):
     access_token_expires_in_ms: int
 
 
-@router.post("/signup")
+@router.post("/signup/")
 def signup(request: SignupRequest):
     """Sign up a new user."""
     cognito_signup(request.email, request.password)
     return {"message": "Registration email sent"}
 
 
-@router.post("/confirm-signup")
+@router.post("/confirm-signup/")
 def confirm_signup(request: ConfirmSignupRequest):
     """Confirm user signup with verification code."""
     cognito_confirm_signup(request.email, request.confirmation_code)
     return {"message": "User confirmed successfully. You can now log in."}
 
 
-@router.post("/login", response_model=AuthResponse)
+@router.post("/login/", response_model=AuthResponse)
 def login(request: LoginRequest, db: Session = Depends(get_session)):
     """Authenticate user and create session."""
     # Authenticate with Cognito
@@ -103,7 +103,7 @@ def login(request: LoginRequest, db: Session = Depends(get_session)):
     return response
 
 
-@router.post("/resume", response_model=AuthResponse)
+@router.post("/resume/", response_model=AuthResponse)
 def resume(db: Session = Depends(get_session), request: Request = None):
     """Resume session using session-resume cookie."""
     # Get refresh token from cookie
@@ -138,7 +138,7 @@ def resume(db: Session = Depends(get_session), request: Request = None):
     return response
 
 
-@router.post("/logout")
+@router.post("/logout/")
 def logout(response: Response):
     """Logout user by clearing session-resume cookie."""
     cookie_kwargs = {}

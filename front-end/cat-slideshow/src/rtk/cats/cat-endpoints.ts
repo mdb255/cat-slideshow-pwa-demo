@@ -10,7 +10,7 @@ import type {
 export const getCatEndpoints = (builder: EndpointBuilder<any, any, any>) => ({
     getCats: builder.query<Cat[], CatsQueryParams>({
         query: (params: CatsQueryParams) => ({
-            url: 'cats',
+            url: 'cats/',
             params,
         }),
         providesTags: (result: Cat[] | undefined) =>
@@ -23,7 +23,7 @@ export const getCatEndpoints = (builder: EndpointBuilder<any, any, any>) => ({
     }),
 
     getCat: builder.query<Cat, number>({
-        query: (id: number) => `cats/${id}`,
+        query: (id: number) => `cats/${id}/`,
         providesTags: (result: Cat | undefined, error: any, id: number) => {
             void result; void error
             return [{ type: 'Cat', id }]
@@ -32,7 +32,7 @@ export const getCatEndpoints = (builder: EndpointBuilder<any, any, any>) => ({
 
     createCat: builder.mutation<Cat, CatCreate>({
         query: (newCat: CatCreate) => ({
-            url: 'cats',
+            url: 'cats/',
             method: 'POST',
             body: newCat,
         }),
@@ -41,7 +41,7 @@ export const getCatEndpoints = (builder: EndpointBuilder<any, any, any>) => ({
 
     updateCat: builder.mutation<Cat, { id: number; updates: CatUpdate }>({
         query: ({ id, updates }: { id: number; updates: CatUpdate }) => ({
-            url: `cats/${id}`,
+            url: `cats/${id}/`,
             method: 'PATCH',
             body: updates,
         }),
@@ -53,7 +53,7 @@ export const getCatEndpoints = (builder: EndpointBuilder<any, any, any>) => ({
 
     deleteCat: builder.mutation<void, number>({
         query: (id: number) => ({
-            url: `cats/${id}`,
+            url: `cats/${id}/`,
             method: 'DELETE',
         }),
         invalidatesTags: (result: void | undefined, error: any, id: number) => {

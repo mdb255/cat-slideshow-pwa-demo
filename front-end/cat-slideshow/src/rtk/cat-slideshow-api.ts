@@ -8,7 +8,7 @@ import { getAuthEndpoints } from './auth/auth-endpoints'
 export const catSlideshowApi = createApi({
     reducerPath: 'catSlideshowApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000/',
+        baseUrl: import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000',
         credentials: 'include', // Include cookies for auth
         prepareHeaders: (headers, { getState }) => {
             const token = (getState() as any)?.auth?.accessToken

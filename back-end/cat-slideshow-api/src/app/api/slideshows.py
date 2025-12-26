@@ -30,7 +30,7 @@ def list_slideshows(skip: int = 0, limit: int = 100, db: Session = Depends(get_s
     return slideshow.get_multi_for_user(db=db, user_id=db_user.id, skip=skip, limit=limit)
 
 
-@router.get("/{slideshow_id}", response_model=SlideshowRead)
+@router.get("/{slideshow_id}/", response_model=SlideshowRead)
 def get_slideshow(slideshow_id: int, db: Session = Depends(get_session), current_user: dict = Depends(get_current_user)):
     """Get a specific slideshow."""
     db_user = user_crud.get_by_cognito_sub(db, cognito_sub=current_user.get("sub"))
@@ -42,7 +42,7 @@ def get_slideshow(slideshow_id: int, db: Session = Depends(get_session), current
     return slideshow_obj
 
 
-@router.patch("/{slideshow_id}", response_model=SlideshowRead)
+@router.patch("/{slideshow_id}/", response_model=SlideshowRead)
 def update_slideshow(slideshow_id: int, slideshow_data: SlideshowUpdate, db: Session = Depends(get_session), current_user: dict = Depends(get_current_user)):
     """Update a slideshow."""
     db_user = user_crud.get_by_cognito_sub(db, cognito_sub=current_user.get("sub"))
@@ -54,7 +54,7 @@ def update_slideshow(slideshow_id: int, slideshow_data: SlideshowUpdate, db: Ses
     return slideshow.update(db=db, db_obj=slideshow_obj, obj_in=slideshow_data)
 
 
-@router.delete("/{slideshow_id}", status_code=204)
+@router.delete("/{slideshow_id}/", status_code=204)
 def delete_slideshow(slideshow_id: int, db: Session = Depends(get_session), current_user: dict = Depends(get_current_user)):
     """Delete a slideshow."""
     db_user = user_crud.get_by_cognito_sub(db, cognito_sub=current_user.get("sub"))
@@ -66,7 +66,7 @@ def delete_slideshow(slideshow_id: int, db: Session = Depends(get_session), curr
     slideshow.remove(db=db, id=slideshow_id)
 
 
-@router.get("/cat/{cat_id}", response_model=List[SlideshowRead])
+@router.get("/cat/{cat_id}/", response_model=List[SlideshowRead])
 def get_slideshows_by_cat(cat_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_session), current_user: dict = Depends(get_current_user)):
     """Get slideshows by cat ID."""
     db_user = user_crud.get_by_cognito_sub(db, cognito_sub=current_user.get("sub"))
@@ -77,7 +77,7 @@ def get_slideshows_by_cat(cat_id: int, skip: int = 0, limit: int = 100, db: Sess
 
 
 
-@router.get("/search/{search_term}", response_model=List[SlideshowRead])
+@router.get("/search/{search_term}/", response_model=List[SlideshowRead])
 def search_slideshows(search_term: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_session), current_user: dict = Depends(get_current_user)):
     """Search slideshows by title."""
     db_user = user_crud.get_by_cognito_sub(db, cognito_sub=current_user.get("sub"))
