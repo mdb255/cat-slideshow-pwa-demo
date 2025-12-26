@@ -52,7 +52,7 @@ def list_cats(
     return cat.get_multi_for_user(db=db, user_id=db_user.id, skip=skip, limit=limit)
 
 
-@router.get("/{cat_id}", response_model=CatRead)
+@router.get("/{cat_id}/", response_model=CatRead)
 def get_cat(cat_id: int, db: Session = Depends(get_session), current_user: dict = Depends(get_current_user)):
     """Get a specific cat."""
     db_user = user_crud.get_by_cognito_sub(db, cognito_sub=current_user.get("sub"))
@@ -64,7 +64,7 @@ def get_cat(cat_id: int, db: Session = Depends(get_session), current_user: dict 
     return cat_obj
 
 
-@router.patch("/{cat_id}", response_model=CatRead)
+@router.patch("/{cat_id}/", response_model=CatRead)
 def update_cat(cat_id: int, cat_data: CatUpdate, db: Session = Depends(get_session), current_user: dict = Depends(get_current_user)):
     """Update a cat."""
     db_user = user_crud.get_by_cognito_sub(db, cognito_sub=current_user.get("sub"))
@@ -76,7 +76,7 @@ def update_cat(cat_id: int, cat_data: CatUpdate, db: Session = Depends(get_sessi
     return cat.update(db=db, db_obj=cat_obj, obj_in=cat_data)
 
 
-@router.delete("/{cat_id}", status_code=204)
+@router.delete("/{cat_id}/", status_code=204)
 def delete_cat(cat_id: int, db: Session = Depends(get_session), current_user: dict = Depends(get_current_user)):
     """Delete a cat."""
     db_user = user_crud.get_by_cognito_sub(db, cognito_sub=current_user.get("sub"))
