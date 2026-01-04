@@ -17,8 +17,13 @@ class SlideshowCRUD(CRUDBase[Slideshow, SlideshowCreate, SlideshowUpdate]):
         return db.exec(statement).all()
 
     def create_for_user(self, db: Session, *, obj_in: SlideshowCreate, user_id: int) -> Slideshow:
-        obj_in.user_id = user_id
-        return self.create(db, obj_in=obj_in)
+        obj_in_data = obj_in.model_dump()
+        obj_in_data["user_id"] = user_id
+        db_obj = Slideshow(**obj_in_data)
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
 
     def get_by_cat(self, db: Session, *, cat_id: int, user_id: int, skip: int = 0, limit: int = 100) -> List[Slideshow]:
         statement = select(Slideshow).where(Slideshow.cat_id == cat_id, Slideshow.user_id == user_id).offset(skip).limit(limit)

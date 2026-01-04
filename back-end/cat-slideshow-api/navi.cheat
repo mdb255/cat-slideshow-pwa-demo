@@ -1,0 +1,8 @@
+# Run local dev server
+uv run uvicorn app.main:app --reload --app-dir src
+
+# Create Alembic migration
+alembic revision --autogenerate -m "<message>"
+
+# Run Alembic migrations
+uv run alembic upgrade head

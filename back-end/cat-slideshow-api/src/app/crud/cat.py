@@ -17,8 +17,13 @@ class CatCRUD(CRUDBase[Cat, CatCreate, CatUpdate]):
         return db.exec(statement).all()
 
     def create_for_user(self, db: Session, *, obj_in: CatCreate, user_id: int) -> Cat:
-        obj_in.user_id = user_id
-        return self.create(db, obj_in=obj_in)
+        obj_in_data = obj_in.model_dump()
+        obj_in_data["user_id"] = user_id
+        db_obj = Cat(**obj_in_data)
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
 
     def get_by_name(self, db: Session, *, name: str, user_id: int) -> Optional[Cat]:
         statement = select(Cat).where(Cat.name == name, Cat.user_id == user_id)
