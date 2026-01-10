@@ -80,6 +80,7 @@ jobs:
             --delete \
             --exclude "index.html" \
             --exclude "sw.js" \
+            --exclude "manifest.webmanifest" \
             --cache-control "public,max-age=31536000,immutable" \
             --metadata-directive REPLACE
 
@@ -97,8 +98,15 @@ jobs:
             --cache-control "no-store" \
             --content-type "text/html; charset=utf-8"
 
+      # Upload manifest.webmanifest with no-store
+      - name: Upload manifest.webmanifest (no-store)
+        run: |
+          aws s3 cp dist/manifest.webmanifest s3://${{ env.PWA_S3_BUCKET }}/manifest.webmanifest \
+            --cache-control "no-store" \
+            --content-type "application/manifest+json"
+
       - name: Invalidate CloudFront
         run: |
           aws cloudfront create-invalidation \
             --distribution-id "${{ env.PWA_CLOUDFRONT_DISTRIBUTION_ID }}" \
-            --paths "/index.html" "/sw.js"
+            --paths "/index.html" "/sw.js" "/manifest.webmanifest"
