@@ -18,6 +18,22 @@ export default defineConfig({
             short_name: 'Cat Slideshow',
             description: 'Cat Slideshow Demo',
             theme_color: '#6d0fab',
+            background_color: '#6d0fab',
+            icons: [
+                {
+                    src: 'favicon_v2.png',
+                    sizes: '192x192',
+                    type: 'image/png',
+                    purpose: 'any'
+                },
+                {
+                    // Used when installing on Android
+                    src: 'favicon_maskable.png',
+                    sizes: '512x512',
+                    type: 'image/png',
+                    purpose: 'maskable'
+                }
+            ]
         },
 
         workbox: {
