@@ -1,30 +1,25 @@
-import { Box, Typography, Container, Button, IconButton, Menu, MenuItem, Tooltip, Toolbar } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { stylesWithLabels } from '../../modules/util/styles-util'
-import theme from '../../modules/theme/theme'
-import TopNavBar from '../design-system/top-nav-bar'
-import AccountCircle from '@mui/icons-material/AccountCircle'
-import { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import {
+    IonPage,
+    IonContent,
+    IonButton,
+    IonIcon,
+    IonPopover,
+    IonList,
+    IonItem,
+    IonLabel,
+} from '@ionic/react'
+import { personCircle } from 'ionicons/icons'
+import TopNavBar from '../design-system/top-nav-bar'
 import { clearAuth } from '../../rtk/auth/auth-slice'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
-
 
 function WelcomeScreen() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-    const menuOpen = Boolean(anchorEl)
 
     const [logoutTrigger] = catSlideshowApi.useLogoutMutation()
-
-    const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget)
-    }
-
-    const handleCloseMenu = () => {
-        setAnchorEl(null)
-    }
 
     const handleSetupDataClick = () => {
         navigate('/setup-data')
@@ -37,7 +32,7 @@ function WelcomeScreen() {
     const handleLogout = async () => {
         try {
             await logoutTrigger().unwrap()
-        } catch (e) {
+        } catch {
             // proceed to clear auth regardless; backend may already have invalidated session
         } finally {
             dispatch(clearAuth())
@@ -46,97 +41,55 @@ function WelcomeScreen() {
     }
 
     return (
-        <>
+        <IonPage>
             <TopNavBar showBackButton={false}>
-                <Tooltip title="Profile">
-                    <IconButton
-                        onClick={handleOpenMenu}
-                        aria-controls={menuOpen ? 'profile-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={menuOpen ? 'true' : undefined}
-                        size="large"
-                        color="inherit"
-                    >
-                        <AccountCircle />
-                    </IconButton>
-                </Tooltip>
-                <Menu
-                    id="profile-menu"
-                    anchorEl={anchorEl}
-                    open={menuOpen}
-                    onClose={handleCloseMenu}
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                <IonButton
+                    fill="clear"
+                    color="light"
+                    id="profile-trigger"
+                    aria-label="Profile"
                 >
-                    <MenuItem onClick={handleLogout}>Log Out</MenuItem>
-                </Menu>
+                    <IonIcon icon={personCircle} />
+                </IonButton>
             </TopNavBar>
-            <Toolbar />
-            <Container sx={styles.welcomeContainer} maxWidth="lg">
-                <Box sx={styles.welcomeHeader}>
-                    <Typography
-                        variant="h2"
-                        component="h1"
-                        sx={styles.welcomeHeaderText}
-                    >
+            <IonPopover trigger="profile-trigger">
+                <IonList>
+                    <IonItem button onClick={handleLogout}>
+                        <IonLabel>Log Out</IonLabel>
+                    </IonItem>
+                </IonList>
+            </IonPopover>
+            <IonContent className="ion-padding flex flex-col items-center justify-center text-center min-h-full">
+                <div className="max-w-lg w-full flex flex-col items-center gap-6 mb-8">
+                    <h1 className="text-3xl font-semibold">
                         Welcome to Cat Slideshow Demo
-                    </Typography>
-                    <Box
-                        component="img"
+                    </h1>
+                    <img
                         src="https://cat-slideshow-demo.s3.us-east-1.amazonaws.com/cats_splash.png"
                         alt="Cat Slideshow Placeholder"
-                        sx={styles.placeholderImage}
+                        className="max-w-full h-auto rounded-lg"
                     />
-                </Box>
-
-                <Box sx={styles.welcomeActions}>
-                    <Button variant="outlined" size='large' onClick={handleSetupDataClick}>
+                </div>
+                <div className="flex flex-col items-center gap-4 w-full max-w-sm">
+                    <IonButton
+                        expand="block"
+                        size="large"
+                        fill="outline"
+                        onClick={handleSetupDataClick}
+                    >
                         Setup Data
-                    </Button>
-                    <Button variant="contained" size='large' onClick={handleViewSlideshowsClick}>
+                    </IonButton>
+                    <IonButton
+                        expand="block"
+                        size="large"
+                        onClick={handleViewSlideshowsClick}
+                    >
                         View Slideshows
-                    </Button>
-                </Box>
-            </Container>
-        </>
+                    </IonButton>
+                </div>
+            </IonContent>
+        </IonPage>
     )
 }
 
 export default WelcomeScreen
-
-let styles = {
-    welcomeContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        textAlign: 'center',
-        padding: theme.spacing(4),
-    },
-    welcomeHeader: {
-        marginBottom: theme.spacing(6),
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: theme.spacing(3),
-    },
-    placeholderImage: {
-        maxWidth: '100%',
-        height: 'auto',
-        borderRadius: '8px',
-    },
-    welcomeActions: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: theme.spacing(3),
-        width: '100%',
-    },
-    welcomeHeaderText: {
-        fontWeight: 600,
-        fontSize: '2rem',
-    },
-};
-
-styles = stylesWithLabels(styles, 'WelcomeScreen');

@@ -1,8 +1,6 @@
-import { Card, CardContent, Typography, Box, IconButton } from '@mui/material'
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material'
+import { IonCard, IonCardContent, IonButton, IonIcon } from '@ionic/react'
+import { createOutline, trashOutline } from 'ionicons/icons'
 import type { Cat } from '../../rtk/cats/cat-model'
-import { stylesWithLabels } from '../../modules/util/styles-util'
-import theme from '../../modules/theme/theme'
 
 interface CatCardProps {
     cat: Cat
@@ -12,62 +10,25 @@ interface CatCardProps {
 
 function CatCard({ cat, onEdit, onDelete }: CatCardProps) {
     return (
-        <Card sx={styles.card}>
-            <CardContent sx={styles.cardContent}>
-                <Box sx={styles.infoContainer}>
-                    <Typography variant="h6" component="div">
-                        {cat.name}
-                    </Typography>
+        <IonCard className="w-full mb-4">
+            <IonCardContent className="flex justify-between items-center py-4">
+                <div className="flex-1 min-w-0">
+                    <h2 className="text-lg font-semibold">{cat.name}</h2>
                     {cat.breed && (
-                        <Typography variant="body2" color="text.secondary">
-                            {cat.breed}
-                        </Typography>
+                        <p className="text-sm text-secondary mt-1">{cat.breed}</p>
                     )}
-                </Box>
-                <Box sx={styles.actionsContainer}>
-                    <IconButton
-                        aria-label="edit cat"
-                        onClick={onEdit}
-                        color="primary"
-                    >
-                        <EditIcon />
-                    </IconButton>
-                    <IconButton
-                        aria-label="delete cat"
-                        onClick={onDelete}
-                        color="error"
-                    >
-                        <DeleteIcon />
-                    </IconButton>
-                </Box>
-            </CardContent>
-        </Card>
+                </div>
+                <div className="flex gap-1 shrink-0">
+                    <IonButton fill="clear" color="primary" onClick={onEdit} aria-label="edit cat">
+                        <IonIcon icon={createOutline} />
+                    </IonButton>
+                    <IonButton fill="clear" color="danger" onClick={onDelete} aria-label="delete cat">
+                        <IonIcon icon={trashOutline} />
+                    </IonButton>
+                </div>
+            </IonCardContent>
+        </IonCard>
     )
 }
 
-let styles = {
-    card: {
-        width: '100%',
-        marginBottom: theme.spacing(2),
-    },
-    cardContent: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        '&:last-child': {
-            paddingBottom: theme.spacing(2),
-        },
-    },
-    infoContainer: {
-        flex: 1,
-    },
-    actionsContainer: {
-        display: 'flex',
-        gap: theme.spacing(1),
-    },
-}
-
-styles = stylesWithLabels(styles, 'CatCard')
-
 export default CatCard
-

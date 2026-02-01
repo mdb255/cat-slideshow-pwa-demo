@@ -1,63 +1,36 @@
-import { Container, Typography, Box, Button } from '@mui/material'
+import { IonPage, IonContent, IonButton } from '@ionic/react'
 import { useNavigate } from 'react-router-dom'
 import TopNavBar from '../design-system/top-nav-bar'
-import { stylesWithLabels } from '../../modules/util/styles-util'
-import theme from '../../modules/theme/theme'
 
 function SetupDataScreen() {
     const navigate = useNavigate()
 
     return (
-        <>
+        <IonPage>
             <TopNavBar />
-            <Container maxWidth="lg" sx={styles.container}>
-                <Box sx={styles.contentBox}>
-                    <Typography variant="h2" component="h1" gutterBottom>
-                        Setup Data
-                    </Typography>
-                    <Box sx={styles.buttonsContainer}>
-                        <Button
-                            variant="contained"
+            <IonContent className="ion-padding text-center">
+                <div className="mt-16 max-w-4xl mx-auto">
+                    <h1 className="text-3xl font-semibold mb-8">Setup Data</h1>
+                    <div className="flex flex-wrap gap-4 justify-center">
+                        <IonButton
                             size="large"
                             onClick={() => navigate('/cats-admin')}
-                            sx={styles.button}
+                            className="min-w-[200px]"
                         >
                             Cats Admin
-                        </Button>
-                        <Button
-                            variant="contained"
+                        </IonButton>
+                        <IonButton
                             size="large"
                             onClick={() => navigate('/slideshows-admin')}
-                            sx={styles.button}
+                            className="min-w-[200px]"
                         >
                             Slideshows Admin
-                        </Button>
-                    </Box>
-                </Box>
-            </Container>
-        </>
+                        </IonButton>
+                    </div>
+                </div>
+            </IonContent>
+        </IonPage>
     )
 }
-
-let styles = {
-    container: {
-        padding: theme.spacing(4),
-        textAlign: 'center',
-    },
-    contentBox: {
-        marginTop: theme.spacing(8),
-    },
-    buttonsContainer: {
-        display: 'flex',
-        gap: theme.spacing(2),
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-    },
-    button: {
-        minWidth: 200,
-    },
-}
-
-styles = stylesWithLabels(styles, 'SetupDataScreen')
 
 export default SetupDataScreen

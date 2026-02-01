@@ -1,20 +1,16 @@
 import { useState } from 'react'
-import { Container, Typography, Box, IconButton, CircularProgress, Alert } from '@mui/material'
-import { Add as AddIcon } from '@mui/icons-material'
+import { IonPage, IonContent, IonSpinner, IonText, IonButton, IonIcon } from '@ionic/react'
+import { add } from 'ionicons/icons'
 import TopNavBar from '../design-system/top-nav-bar'
 import CatCard from './cat-card'
 import EditCatDialog from './edit-cat-dialog'
 import DeleteConfirmDialog from '../reusable/delete-confirm-dialog'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
-import { stylesWithLabels } from '../../modules/util/styles-util'
-import theme from '../../modules/theme/theme'
 
 function CatsAdminScreen() {
-    // Fetch cats
     const { data: cats, isLoading, error } = catSlideshowApi.useGetCatsQuery({})
     const [deleteCat] = catSlideshowApi.useDeleteCatMutation()
 
-    // Dialog state
     const [editDialogOpen, setEditDialogOpen] = useState(false)
     const [catIdToEdit, setCatIdToEdit] = useState<number | undefined>(undefined)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -46,8 +42,8 @@ function CatsAdminScreen() {
                 await deleteCat(catIdToDelete).unwrap()
                 setDeleteDialogOpen(false)
                 setCatIdToDelete(undefined)
-            } catch (error) {
-                console.error('Failed to delete cat:', error)
+            } catch (err) {
+                console.error('Failed to delete cat:', err)
             }
         }
     }
@@ -57,48 +53,40 @@ function CatsAdminScreen() {
         setCatIdToDelete(undefined)
     }
 
-    const catToDelete = cats?.find(cat => cat.id === catIdToDelete)
+    const catToDelete = cats?.find((cat) => cat.id === catIdToDelete)
 
     return (
-        <>
+        <IonPage>
             <TopNavBar>
-                <IconButton
-                    color="inherit"
-                    aria-label="add cat"
-                    onClick={handleAddCat}
-                >
-                    <AddIcon />
-                </IconButton>
+                <IonButton fill="clear" color="light" onClick={handleAddCat} aria-label="add cat">
+                    <IonIcon icon={add} />
+                </IonButton>
             </TopNavBar>
-            <Container maxWidth="lg" sx={styles.container}>
-                <Box sx={styles.contentBox}>
-                    <Typography variant="h2" component="h1" gutterBottom>
-                        Cats Admin
-                    </Typography>
+            <IonContent className="ion-padding">
+                <div className="mt-6 max-w-4xl mx-auto">
+                    <h1 className="text-3xl font-semibold mb-4">Cats Admin</h1>
 
                     {isLoading && (
-                        <Box sx={styles.loadingContainer}>
-                            <CircularProgress />
-                        </Box>
+                        <div className="flex justify-center py-8">
+                            <IonSpinner name="crescent" />
+                        </div>
                     )}
 
                     {error && (
-                        <Alert severity="error" sx={styles.alert}>
-                            Failed to load cats. Please try again.
-                        </Alert>
+                        <IonText color="danger" className="block mt-4">
+                            <p>Failed to load cats. Please try again.</p>
+                        </IonText>
                     )}
 
                     {!isLoading && !error && cats && cats.length === 0 && (
-                        <Box sx={styles.emptyContainer}>
-                            <Typography variant="body1" color="text.secondary">
-                                No cats yet. Click the + button to add your first cat!
-                            </Typography>
-                        </Box>
+                        <div className="text-center py-8 text-secondary">
+                            <p>No cats yet. Click the + button to add your first cat!</p>
+                        </div>
                     )}
 
                     {!isLoading && !error && cats && cats.length > 0 && (
-                        <Box sx={styles.catsListContainer}>
-                            {cats.map(cat => (
+                        <div className="mt-6 space-y-0">
+                            {cats.map((cat) => (
                                 <CatCard
                                     key={cat.id}
                                     cat={cat}
@@ -106,10 +94,10 @@ function CatsAdminScreen() {
                                     onDelete={() => handleDeleteCat(cat.id)}
                                 />
                             ))}
-                        </Box>
+                        </div>
                     )}
-                </Box>
-            </Container>
+                </div>
+            </IonContent>
 
             <EditCatDialog
                 open={editDialogOpen}
@@ -124,34 +112,8 @@ function CatsAdminScreen() {
                 onConfirm={handleConfirmDelete}
                 onCancel={handleCancelDelete}
             />
-        </>
+        </IonPage>
     )
 }
-
-let styles = {
-    container: {
-        padding: theme.spacing(4),
-    },
-    contentBox: {
-        marginTop: theme.spacing(4),
-    },
-    loadingContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        padding: theme.spacing(4),
-    },
-    alert: {
-        marginTop: theme.spacing(2),
-    },
-    emptyContainer: {
-        textAlign: 'center' as const,
-        padding: theme.spacing(4),
-    },
-    catsListContainer: {
-        marginTop: theme.spacing(4),
-    },
-}
-
-styles = stylesWithLabels(styles, 'CatsAdminScreen')
 
 export default CatsAdminScreen

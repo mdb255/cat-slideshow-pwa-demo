@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react'
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    TextField,
-    CircularProgress,
-    Box,
-} from '@mui/material'
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonItem,
+    IonInput,
+    IonTextarea,
+    IonLabel,
+    IonButton,
+    IonSpinner,
+    IonButtons,
+} from '@ionic/react'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
 import type { CatCreate, CatUpdate } from '../../rtk/cats/cat-model'
 import ConfirmCloseDialog from '../reusable/confirm-close-dialog'
-import { stylesWithLabels } from '../../modules/util/styles-util'
-import theme from '../../modules/theme/theme'
 
 interface EditCatDialogProps {
     open: boolean
@@ -24,25 +26,20 @@ interface EditCatDialogProps {
 function EditCatDialog({ open, catId, onClose }: EditCatDialogProps) {
     const isEditMode = catId !== undefined
 
-    // RTK Query hooks
     const { data: cat, isLoading: isLoadingCat } = catSlideshowApi.useGetCatQuery(catId!, {
         skip: !isEditMode,
     })
     const [createCat, { isLoading: isCreating }] = catSlideshowApi.useCreateCatMutation()
     const [updateCat, { isLoading: isUpdating }] = catSlideshowApi.useUpdateCatMutation()
 
-    // Form state
     const [name, setName] = useState('')
     const [breed, setBreed] = useState('')
     const [age, setAge] = useState('')
     const [color, setColor] = useState('')
     const [description, setDescription] = useState('')
-
-    // Track if form is dirty
     const [isDirty, setIsDirty] = useState(false)
     const [showConfirmClose, setShowConfirmClose] = useState(false)
 
-    // Initialize form when dialog opens or cat data loads
     useEffect(() => {
         if (open) {
             if (isEditMode && cat) {
@@ -53,7 +50,6 @@ function EditCatDialog({ open, catId, onClose }: EditCatDialogProps) {
                 setDescription(cat.description || '')
                 setIsDirty(false)
             } else if (!isEditMode) {
-                // Reset form for create mode
                 setName('')
                 setBreed('')
                 setAge('')
@@ -63,13 +59,6 @@ function EditCatDialog({ open, catId, onClose }: EditCatDialogProps) {
             }
         }
     }, [open, isEditMode, cat])
-
-    const handleFieldChange = (setter: (value: string) => void) => (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        setter(e.target.value)
-        setIsDirty(true)
-    }
 
     const handleClose = () => {
         if (isDirty) {
@@ -106,8 +95,8 @@ function EditCatDialog({ open, catId, onClose }: EditCatDialogProps) {
 
             setIsDirty(false)
             onClose()
-        } catch (error) {
-            console.error('Failed to save cat:', error)
+        } catch (err) {
+            console.error('Failed to save cat:', err)
         }
     }
 
@@ -116,78 +105,97 @@ function EditCatDialog({ open, catId, onClose }: EditCatDialogProps) {
 
     return (
         <>
-            <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle>{isEditMode ? 'Edit Cat' : 'Create Cat'}</DialogTitle>
-                <DialogContent>
+            <IonModal isOpen={open} onDidDismiss={handleClose}>
+                <IonHeader>
+                    <IonToolbar>
+                        <IonTitle>{isEditMode ? 'Edit Cat' : 'Create Cat'}</IonTitle>
+                        <IonButtons slot="end">
+                            <IonButton onClick={handleClose} disabled={isLoading}>
+                                Cancel
+                            </IonButton>
+                        </IonButtons>
+                    </IonToolbar>
+                </IonHeader>
+                <IonContent className="ion-padding">
                     {isLoadingCat ? (
-                        <Box sx={styles.loadingContainer}>
-                            <CircularProgress />
-                        </Box>
+                        <div className="flex justify-center items-center py-12">
+                            <IonSpinner name="crescent" />
+                        </div>
                     ) : (
-                        <Box sx={styles.formContainer}>
-                            <TextField
-                                autoFocus
-                                required
-                                label="Name"
-                                fullWidth
-                                value={name}
-                                onChange={handleFieldChange(setName)}
-                                margin="normal"
-                            />
-                            <TextField
-                                label="Breed"
-                                fullWidth
-                                value={breed}
-                                onChange={handleFieldChange(setBreed)}
-                                margin="normal"
-                            />
-                            <TextField
-                                label="Age"
-                                type="number"
-                                fullWidth
-                                value={age}
-                                onChange={handleFieldChange(setAge)}
-                                margin="normal"
-                                inputProps={{ min: 0 }}
-                            />
-                            <TextField
-                                label="Color"
-                                fullWidth
-                                value={color}
-                                onChange={handleFieldChange(setColor)}
-                                margin="normal"
-                            />
-                            <TextField
-                                label="Description"
-                                fullWidth
-                                multiline
-                                rows={4}
-                                value={description}
-                                onChange={handleFieldChange(setDescription)}
-                                margin="normal"
-                            />
-                        </Box>
+                        <div className="flex flex-col gap-3 pt-2">
+                            <IonItem>
+                                <IonLabel position="stacked">Name *</IonLabel>
+                                <IonInput
+                                    value={name}
+                                    onIonInput={(e) => {
+                                        setName((e.target as HTMLIonInputElement).value as string ?? '')
+                                        setIsDirty(true)
+                                    }}
+                                    required
+                                    autofocus
+                                />
+                            </IonItem>
+                            <IonItem>
+                                <IonLabel position="stacked">Breed</IonLabel>
+                                <IonInput
+                                    value={breed}
+                                    onIonInput={(e) => {
+                                        setBreed((e.target as HTMLIonInputElement).value as string ?? '')
+                                        setIsDirty(true)
+                                    }}
+                                />
+                            </IonItem>
+                            <IonItem>
+                                <IonLabel position="stacked">Age</IonLabel>
+                                <IonInput
+                                    type="number"
+                                    value={age}
+                                    onIonInput={(e) => {
+                                        setAge((e.target as HTMLIonInputElement).value as string ?? '')
+                                        setIsDirty(true)
+                                    }}
+                                    min={0}
+                                />
+                            </IonItem>
+                            <IonItem>
+                                <IonLabel position="stacked">Color</IonLabel>
+                                <IonInput
+                                    value={color}
+                                    onIonInput={(e) => {
+                                        setColor((e.target as HTMLIonInputElement).value as string ?? '')
+                                        setIsDirty(true)
+                                    }}
+                                />
+                            </IonItem>
+                            <IonItem>
+                                <IonLabel position="stacked">Description</IonLabel>
+                                <IonTextarea
+                                    value={description}
+                                    onIonInput={(e) => {
+                                        setDescription((e.target as HTMLIonTextareaElement).value as string ?? '')
+                                        setIsDirty(true)
+                                    }}
+                                    rows={4}
+                                />
+                            </IonItem>
+                            <div className="flex justify-end gap-2 mt-4">
+                                <IonButton onClick={handleClose} disabled={isLoading}>
+                                    Cancel
+                                </IonButton>
+                                <IonButton onClick={handleSubmit} disabled={!canSubmit}>
+                                    {isLoading ? (
+                                        <IonSpinner name="crescent" />
+                                    ) : isEditMode ? (
+                                        'Save'
+                                    ) : (
+                                        'Create'
+                                    )}
+                                </IonButton>
+                            </div>
+                        </div>
                     )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} disabled={isLoading}>
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handleSubmit}
-                        variant="contained"
-                        disabled={!canSubmit}
-                    >
-                        {isLoading ? (
-                            <CircularProgress size={24} />
-                        ) : isEditMode ? (
-                            'Save'
-                        ) : (
-                            'Create'
-                        )}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                </IonContent>
+            </IonModal>
 
             <ConfirmCloseDialog
                 open={showConfirmClose}
@@ -198,19 +206,4 @@ function EditCatDialog({ open, catId, onClose }: EditCatDialogProps) {
     )
 }
 
-let styles = {
-    loadingContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: theme.spacing(4),
-    },
-    formContainer: {
-        paddingTop: theme.spacing(1),
-    },
-}
-
-styles = stylesWithLabels(styles, 'EditCatDialog')
-
 export default EditCatDialog
-

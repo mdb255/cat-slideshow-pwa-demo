@@ -1,7 +1,6 @@
-import { IconButton, Tooltip } from '@mui/material'
-import { ArrowBack } from '@mui/icons-material'
+import { IonButton, IonIcon } from '@ionic/react'
+import { arrowBack } from 'ionicons/icons'
 import { useNavigate } from 'react-router-dom'
-import { stylesWithLabels } from '../../modules/util/styles-util'
 
 interface BackButtonProps {
     tooltip?: string
@@ -20,20 +19,15 @@ function BackButton({ tooltip = 'Go back', onClick }: BackButtonProps) {
     }
 
     return (
-        <Tooltip title={tooltip}>
-            <IconButton onClick={handleClick} sx={styles.button}>
-                <ArrowBack />
-            </IconButton>
-        </Tooltip>
+        <IonButton
+            fill="clear"
+            color="light"
+            onClick={handleClick}
+            aria-label={tooltip}
+        >
+            <IonIcon icon={arrowBack} slot="start" />
+        </IonButton>
     )
 }
-
-let styles = {
-    button: {
-        color: 'white',
-    },
-}
-
-styles = stylesWithLabels(styles, 'BackButton')
 
 export default BackButton

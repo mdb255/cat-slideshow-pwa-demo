@@ -17,24 +17,24 @@ function Router() {
     return (
         <Routes>
             <Route
-                path="/"
-                element={
-                    isAuthenticated ? (
-                        <Navigate to="/welcome" replace />
-                    ) : (
-                        <Navigate to="/login" replace />
-                    )
-                }
-            />
-            {accessRoute({ path: '/login', access: 'anonymous', element: <LoginScreen /> })}
-            {accessRoute({ path: '/sign-up', access: 'anonymous', element: <SignUpScreen /> })}
-            {accessRoute({ path: '/welcome', element: <WelcomeScreen /> })}
-            {accessRoute({ path: '/setup-data', element: <SetupDataScreen /> })}
-            {accessRoute({ path: '/view-slideshows', element: <ViewSlideshowsScreen /> })}
-            {accessRoute({ path: '/play-slideshow/:id', element: <PlaySlideshowScreen /> })}
-            {accessRoute({ path: '/cats-admin', element: <CatsAdminScreen /> })}
-            {accessRoute({ path: '/slideshows-admin', element: <SlideshowsAdminScreen /> })}
-            <Route path="*" element={<div>404 - Page Not Found</div>} />
+                    path="/"
+                    element={
+                        isAuthenticated ? (
+                            <Navigate to="/welcome" replace />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
+                    }
+                />
+                {accessRoute({ path: '/login', access: 'anonymous', element: <LoginScreen /> })}
+                {accessRoute({ path: '/sign-up', access: 'anonymous', element: <SignUpScreen /> })}
+                {accessRoute({ path: '/welcome', element: <WelcomeScreen /> })}
+                {accessRoute({ path: '/setup-data', element: <SetupDataScreen /> })}
+                {accessRoute({ path: '/view-slideshows', element: <ViewSlideshowsScreen /> })}
+                {accessRoute({ path: '/play-slideshow/:id', element: <PlaySlideshowScreen /> })}
+                {accessRoute({ path: '/cats-admin', element: <CatsAdminScreen /> })}
+                {accessRoute({ path: '/slideshows-admin', element: <SlideshowsAdminScreen /> })}
+            <Route path="*" element={<div className="ion-padding">404 - Page Not Found</div>} />
         </Routes>
     )
 }

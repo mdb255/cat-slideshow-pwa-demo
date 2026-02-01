@@ -1,7 +1,6 @@
-import { AppBar, Toolbar, Box } from '@mui/material'
+import { IonHeader, IonToolbar, IonButtons } from '@ionic/react'
 import { ReactNode } from 'react'
 import BackButton from './back-button'
-import { stylesWithLabels } from '../../modules/util/styles-util'
 
 interface TopNavBarProps {
     children?: ReactNode
@@ -10,31 +9,21 @@ interface TopNavBarProps {
 
 function TopNavBar({ children, showBackButton = true }: TopNavBarProps) {
     return (
-        <AppBar position="fixed" elevation={1}>
-            <Toolbar>
-                {showBackButton && <BackButton />}
-                <Box sx={styles.spacer} />
-                {children && (
-                    <Box sx={styles.actionsContainer}>
-                        {children}
-                    </Box>
+        <IonHeader>
+            <IonToolbar color="primary">
+                {showBackButton && (
+                    <IonButtons slot="start">
+                        <BackButton />
+                    </IonButtons>
                 )}
-            </Toolbar>
-        </AppBar>
+                {children && (
+                    <IonButtons slot="end" className="flex items-center gap-1">
+                        {children}
+                    </IonButtons>
+                )}
+            </IonToolbar>
+        </IonHeader>
     )
 }
-
-let styles = {
-    spacer: {
-        flexGrow: 1,
-    },
-    actionsContainer: {
-        display: 'flex',
-        gap: 1,
-        alignItems: 'center',
-    },
-}
-
-styles = stylesWithLabels(styles, 'TopNavBar')
 
 export default TopNavBar

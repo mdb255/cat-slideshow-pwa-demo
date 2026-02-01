@@ -1,6 +1,6 @@
 import { Route, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { Box, CircularProgress } from '@mui/material'
+import { IonSpinner } from '@ionic/react'
 import { RootState } from '../../rtk/store'
 import { ReactElement, ReactNode } from 'react'
 
@@ -22,9 +22,9 @@ export function accessRoute({ access = 'authenticated', element, children, ...re
 
         if (!isInitialized) {
             return (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-                    <CircularProgress size={60} />
-                </Box>
+                <div className="flex justify-center items-center min-h-screen">
+                    <IonSpinner name="crescent" />
+                </div>
             ) as ReactElement
         }
 
