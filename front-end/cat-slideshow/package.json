@@ -11,9 +11,8 @@
     },
     "dependencies": {
         "@ionic/react": "^8.0.0",
-        "@ionic/react-router": "^8.0.0",
-        "ionicons": "^8.0.0",
         "@reduxjs/toolkit": "^2.9.0",
+        "ionicons": "^8.0.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-redux": "^9.2.0",
@@ -21,8 +20,8 @@
         "swiper": "^11.0.0"
     },
     "devDependencies": {
-        "@tailwindcss/vite": "^4.0.0",
         "@eslint/js": "^9.18.0",
+        "@tailwindcss/vite": "^4.0.0",
         "@types/react": "^19.0.8",
         "@types/react-dom": "^19.0.3",
         "@vite-pwa/assets-generator": "^0.2.6",
@@ -31,8 +30,8 @@
         "eslint-plugin-react-hooks": "^5.0.0",
         "eslint-plugin-react-refresh": "^0.4.18",
         "globals": "^15.14.0",
-        "typescript": "~5.7.2",
         "tailwindcss": "^4.0.0",
+        "typescript": "~5.7.2",
         "typescript-eslint": "^8.20.0",
         "vite": "^6.0.11",
         "vite-plugin-pwa": "^0.21.1",

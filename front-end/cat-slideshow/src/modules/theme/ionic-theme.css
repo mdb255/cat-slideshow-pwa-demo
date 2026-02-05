@@ -19,3 +19,23 @@
     --ion-color-secondary-shade: #8a4bb8;
     --ion-color-secondary-tint: #d4a3f0;
 }
+
+/* Override Ionic defaults to work better with Tailwind utilities */
+ion-card-content {
+    display: flex;
+}
+
+/* Fade transition for route changes */
+.route-transition {
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

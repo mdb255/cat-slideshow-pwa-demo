@@ -9,14 +9,16 @@ import SlideshowsAdminScreen from '../../components/slideshows-admin-screen/slid
 import LoginScreen from '../../components/login-screen/login-screen'
 import SignUpScreen from '../../components/sign-up-screen/sign-up-screen'
 import { accessRoute } from '../../components/routing/access-route'
+import { RouteTransition } from '../../components/routing/route-transition'
 import { RootState } from '../../rtk/store'
 
 function Router() {
     const { isAuthenticated } = useSelector((state: RootState) => state.auth)
 
     return (
-        <Routes>
-            <Route
+        <RouteTransition>
+            <Routes>
+                <Route
                     path="/"
                     element={
                         isAuthenticated ? (
@@ -34,8 +36,9 @@ function Router() {
                 {accessRoute({ path: '/play-slideshow/:id', element: <PlaySlideshowScreen /> })}
                 {accessRoute({ path: '/cats-admin', element: <CatsAdminScreen /> })}
                 {accessRoute({ path: '/slideshows-admin', element: <SlideshowsAdminScreen /> })}
-            <Route path="*" element={<div className="ion-padding">404 - Page Not Found</div>} />
-        </Routes>
+                <Route path="*" element={<div className="ion-padding">404 - Page Not Found</div>} />
+            </Routes>
+        </RouteTransition>
     )
 }
 

@@ -10,7 +10,7 @@ interface SlideshowCardProps {
 function SlideshowCard({ slideshow, onClick }: SlideshowCardProps) {
     return (
         <IonCard button onClick={onClick} className="w-full mb-4 cursor-pointer">
-            <IonCardContent className="flex justify-between items-center py-4">
+            <IonCardContent className="justify-between items-center py-4">
                 <div className="flex-1 min-w-0">
                     <h2 className="text-lg font-semibold">{slideshow.title}</h2>
                     {slideshow.description && (

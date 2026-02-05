@@ -19,7 +19,9 @@ import '@ionic/react/css/display.css'
 import './modules/theme/ionic-theme.css'
 import './index.css'
 
-setupIonicReact()
+setupIonicReact({
+    mode: 'ios',
+})
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
