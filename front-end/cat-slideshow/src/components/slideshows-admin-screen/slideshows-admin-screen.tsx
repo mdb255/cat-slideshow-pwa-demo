@@ -57,15 +57,13 @@ function SlideshowsAdminScreen() {
 
     return (
         <IonPage>
-            <TopNavBar>
+            <TopNavBar title="Slideshows Admin">
                 <IonButton fill="clear" color="light" onClick={handleAddSlideshow} aria-label="add slideshow">
                     <IonIcon icon={add} />
                 </IonButton>
             </TopNavBar>
             <IonContent className="ion-padding">
                 <div className="mt-6 max-w-4xl mx-auto">
-                    <h1 className="text-3xl font-semibold mb-4">Slideshows Admin</h1>
-
                     {isLoading && (
                         <div className="flex justify-center py-8">
                             <IonSpinner name="crescent" />

@@ -17,6 +17,7 @@ import {
 } from '@ionic/react'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
 import type { SlideshowCreate, SlideshowUpdate } from '../../rtk/slideshows/slideshow-model'
+import BackButton from '../design-system/back-button'
 import ConfirmCloseDialog from '../reusable/confirm-close-dialog'
 import ImagePicker from '../reusable/image-picker'
 
@@ -114,10 +115,19 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
             <IonModal isOpen={open} onDidDismiss={handleClose}>
                 <IonHeader>
                     <IonToolbar>
-                        <IonTitle>{isEditMode ? 'Edit Slideshow' : 'Create Slideshow'}</IonTitle>
+                        <IonButtons slot="start">
+                            <BackButton onClick={handleClose} tooltip="Cancel" />
+                        </IonButtons>
+                        <IonTitle className="ion-text-start">{isEditMode ? 'Edit Slideshow' : 'Create Slideshow'}</IonTitle>
                         <IonButtons slot="end">
-                            <IonButton onClick={handleClose} disabled={isLoading}>
-                                Cancel
+                            <IonButton onClick={handleSubmit} disabled={!canSubmit}>
+                                {isLoading ? (
+                                    <IonSpinner name="crescent" />
+                                ) : isEditMode ? (
+                                    'Save'
+                                ) : (
+                                    'Create'
+                                )}
                             </IonButton>
                         </IonButtons>
                     </IonToolbar>
@@ -175,20 +185,6 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
                                 selectedImageUrls={selectedImageUrls}
                                 onChange={handleImageUrlsChange}
                             />
-                            <div className="flex justify-end gap-2 mt-4">
-                                <IonButton onClick={handleClose} disabled={isLoading}>
-                                    Cancel
-                                </IonButton>
-                                <IonButton onClick={handleSubmit} disabled={!canSubmit}>
-                                    {isLoading ? (
-                                        <IonSpinner name="crescent" />
-                                    ) : isEditMode ? (
-                                        'Save'
-                                    ) : (
-                                        'Create'
-                                    )}
-                                </IonButton>
-                            </div>
                         </div>
                     )}
                 </IonContent>

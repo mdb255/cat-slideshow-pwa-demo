@@ -1,6 +1,5 @@
-import { IonButton, IonIcon } from '@ionic/react'
+import { IonButton, IonIcon, useIonRouter } from '@ionic/react'
 import { arrowBack } from 'ionicons/icons'
-import { useNavigate } from 'react-router-dom'
 
 interface BackButtonProps {
     tooltip?: string
@@ -8,13 +7,13 @@ interface BackButtonProps {
 }
 
 function BackButton({ tooltip = 'Go back', onClick }: BackButtonProps) {
-    const navigate = useNavigate()
+    const ionRouter = useIonRouter()
 
     const handleClick = () => {
         if (onClick) {
             onClick()
         } else {
-            navigate(-1)
+            ionRouter.goBack()
         }
     }
 

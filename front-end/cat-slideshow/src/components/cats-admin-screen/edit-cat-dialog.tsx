@@ -15,6 +15,7 @@ import {
 } from '@ionic/react'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
 import type { CatCreate, CatUpdate } from '../../rtk/cats/cat-model'
+import BackButton from '../design-system/back-button'
 import ConfirmCloseDialog from '../reusable/confirm-close-dialog'
 
 interface EditCatDialogProps {
@@ -70,6 +71,7 @@ function EditCatDialog({ open, catId, onClose }: EditCatDialogProps) {
 
     const handleConfirmClose = () => {
         setShowConfirmClose(false)
+        setIsDirty(false)
         onClose()
     }
 
@@ -108,10 +110,19 @@ function EditCatDialog({ open, catId, onClose }: EditCatDialogProps) {
             <IonModal isOpen={open} onDidDismiss={handleClose}>
                 <IonHeader>
                     <IonToolbar>
-                        <IonTitle>{isEditMode ? 'Edit Cat' : 'Create Cat'}</IonTitle>
+                        <IonButtons slot="start">
+                            <BackButton onClick={handleClose} tooltip="Cancel" />
+                        </IonButtons>
+                        <IonTitle className="ion-text-start">{isEditMode ? 'Edit Cat' : 'Create Cat'}</IonTitle>
                         <IonButtons slot="end">
-                            <IonButton onClick={handleClose} disabled={isLoading}>
-                                Cancel
+                            <IonButton onClick={handleSubmit} disabled={!canSubmit}>
+                                {isLoading ? (
+                                    <IonSpinner name="crescent" />
+                                ) : isEditMode ? (
+                                    'Save'
+                                ) : (
+                                    'Create'
+                                )}
                             </IonButton>
                         </IonButtons>
                     </IonToolbar>
@@ -178,20 +189,6 @@ function EditCatDialog({ open, catId, onClose }: EditCatDialogProps) {
                                     rows={4}
                                 />
                             </IonItem>
-                            <div className="flex justify-end gap-2 mt-4">
-                                <IonButton onClick={handleClose} disabled={isLoading}>
-                                    Cancel
-                                </IonButton>
-                                <IonButton onClick={handleSubmit} disabled={!canSubmit}>
-                                    {isLoading ? (
-                                        <IonSpinner name="crescent" />
-                                    ) : isEditMode ? (
-                                        'Save'
-                                    ) : (
-                                        'Create'
-                                    )}
-                                </IonButton>
-                            </div>
                         </div>
                     )}
                 </IonContent>

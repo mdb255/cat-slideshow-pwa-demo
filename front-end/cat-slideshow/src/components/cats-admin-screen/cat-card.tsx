@@ -13,9 +13,9 @@ function CatCard({ cat, onEdit, onDelete }: CatCardProps) {
         <IonCard className="w-full mb-4">
             <IonCardContent className="flex justify-between items-center py-4">
                 <div className="flex-1 min-w-0">
-                    <h2 className="text-lg font-semibold">{cat.name}</h2>
+                    <h2 className="text-lg font-semibold text-black">{cat.name}</h2>
                     {cat.breed && (
-                        <p className="text-sm text-secondary mt-1">{cat.breed}</p>
+                        <p className="text-sm mt-1" style={{ color: 'var(--app-subtitle-color)' }}>{cat.breed}</p>
                     )}
                 </div>
                 <div className="flex gap-1 shrink-0">

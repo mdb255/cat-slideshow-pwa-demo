@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { IonPage, IonContent, IonItem, IonInput, IonLabel, IonButton, IonSpinner, IonText, IonIcon } from '@ionic/react'
 import { eyeOffOutline, eyeOutline } from 'ionicons/icons'
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
 import TopNavBar from '../design-system/top-nav-bar'
 
 function SignUpScreen() {
-    const navigate = useNavigate()
+    const history = useHistory()
 
     const [step, setStep] = useState<1 | 2>(1)
     const [email, setEmail] = useState('')
@@ -57,7 +57,7 @@ function SignUpScreen() {
         }
         try {
             await confirmSignup({ email: email.trim(), confirmation_code: confirmationCode.trim() }).unwrap()
-            navigate('/login')
+            history.push('/login')
         } catch (err: unknown) {
             const detail = err && typeof err === 'object' && 'data' in err && err.data && typeof err.data === 'object' && 'detail' in err.data
                 ? String((err.data as { detail?: unknown }).detail)

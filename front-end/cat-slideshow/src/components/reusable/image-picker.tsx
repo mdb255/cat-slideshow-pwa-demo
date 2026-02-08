@@ -6,11 +6,13 @@ import {
     IonTitle,
     IonContent,
     IonButton,
+    IonButtons,
     IonCheckbox,
     IonGrid,
     IonRow,
     IonCol,
 } from '@ionic/react'
+import BackButton from '../design-system/back-button'
 
 interface ImagePickerProps {
     availableImageUrls: string[]
@@ -73,10 +75,15 @@ function ImagePicker({
             <IonModal isOpen={dialogOpen} onDidDismiss={handleCancel}>
                 <IonHeader>
                     <IonToolbar>
-                        <IonTitle>Pick images</IonTitle>
-                        <IonButton slot="end" fill="clear" onClick={handleCancel}>
-                            Cancel
-                        </IonButton>
+                        <IonButtons slot="start">
+                            <BackButton onClick={handleCancel} tooltip="Cancel" />
+                        </IonButtons>
+                        <IonTitle className="ion-text-start">Pick images</IonTitle>
+                        <IonButtons slot="end">
+                            <IonButton onClick={handleUse}>
+                                Use
+                            </IonButton>
+                        </IonButtons>
                     </IonToolbar>
                 </IonHeader>
                 <IonContent className="ion-padding">
@@ -127,18 +134,6 @@ function ImagePicker({
                             </IonRow>
                         </IonGrid>
                     )}
-
-                    <div className="fixed bottom-0 left-0 right-0 flex justify-between items-center p-4 bg-white border-t border-gray-200 safe-area-pb">
-                        <span className="font-semibold">Selected ({tempSelection.length})</span>
-                        <div className="flex gap-2">
-                            <IonButton fill="clear" onClick={handleCancel}>
-                                Cancel
-                            </IonButton>
-                            <IonButton onClick={handleUse}>
-                                Use
-                            </IonButton>
-                        </div>
-                    </div>
                 </IonContent>
             </IonModal>
         </>

@@ -1,25 +1,23 @@
-import { IonPage, IonContent, IonSpinner, IonText } from '@ionic/react'
-import { useNavigate } from 'react-router-dom'
+import { IonPage, IonContent, IonSpinner, IonText, useIonRouter } from '@ionic/react'
 import TopNavBar from '../design-system/top-nav-bar'
+import { APP_MENU_ID } from '../routing/app-menu-id'
 import SlideshowCard from './slideshow-card'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
 
 function ViewSlideshowsScreen() {
-    const navigate = useNavigate()
+    const ionRouter = useIonRouter()
 
     const { data: slideshows, isLoading, error } = catSlideshowApi.useGetSlideshowsQuery({})
 
     const handleSlideshowClick = (slideshowId: number) => {
-        navigate(`/play-slideshow/${slideshowId}`)
+        ionRouter.push(`/play-slideshow/${slideshowId}`)
     }
 
     return (
         <IonPage>
-            <TopNavBar />
+            <TopNavBar showBackButton={false} menuId={APP_MENU_ID} title="View Slideshows" />
             <IonContent className="ion-padding">
                 <div className="mt-6 max-w-4xl mx-auto">
-                    <h1 className="text-3xl font-semibold mb-4">View Slideshows</h1>
-
                     {isLoading && (
                         <div className="flex justify-center py-8">
                             <IonSpinner name="crescent" />

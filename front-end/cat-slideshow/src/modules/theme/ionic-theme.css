@@ -18,6 +18,9 @@
     --ion-color-secondary-contrast-rgb: 255, 255, 255;
     --ion-color-secondary-shade: #8a4bb8;
     --ion-color-secondary-tint: #d4a3f0;
+
+    /* Card subtitle / breed / description – explicit so it matches in IonCard and IonContent */
+    --app-subtitle-color: #666;
 }
 
 /* Override Ionic defaults to work better with Tailwind utilities */
@@ -25,8 +28,57 @@ ion-card-content {
     display: flex;
 }
 
+/* App bar – white background with black text/icons */
+ion-toolbar {
+    --background: #ffffff;
+    --color: #000000;
+    --border-color: #e0e0e0;
+}
+
+ion-toolbar ion-button,
+ion-toolbar ion-icon,
+ion-toolbar ion-back-button {
+    --color: #000000;
+    color: #000000;
+}
+
+/* Left-aligned toolbar title: add start padding so it doesn’t overlap [slot="start"] buttons */
+ion-toolbar ion-title.ion-text-start {
+    padding-inline-start: 3rem;
+}
+
+/* Tab bar – white background with black icons/labels */
+ion-tab-bar {
+    --background: #ffffff;
+    --color: #000000;
+    --color-selected: #6d0fab;
+    --border: 1px solid #e0e0e0;
+}
+
+ion-tab-button {
+    --color: #757575;
+    --color-selected: #6d0fab;
+    transition: background-color 0.2s ease;
+}
+
+ion-tab-button.tab-selected {
+    font-weight: 600;
+}
+
+/* Fully rounded buttons by default */
+ion-button {
+    --border-radius: 9999px;
+}
+
+/* Play slideshow – swiper pagination dots use primary purple, sit below image */
+.play-slideshow-swiper {
+    --swiper-pagination-color: var(--ion-color-primary);
+    padding-bottom: 2.5rem;
+}
+
 /* Fade transition for route changes */
-.route-transition {
+.route-transition,
+.route-transition-enter {
     animation: fadeIn 0.25s ease-in-out;
 }
 

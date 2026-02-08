@@ -70,11 +70,11 @@ function PlaySlideshowScreen() {
 
                     {!isLoading && !error && slideshow && (
                         <>
-                            <h1 className="text-3xl font-semibold text-center mb-2">
+                            <h1 className="text-3xl font-semibold text-center text-black mb-2">
                                 {slideshow.title}
                             </h1>
                             {slideshow.description && (
-                                <p className="text-center text-secondary mb-6">
+                                <p className="text-center mb-6" style={{ color: 'var(--app-subtitle-color)' }}>
                                     {slideshow.description}
                                 </p>
                             )}
@@ -95,7 +95,7 @@ function PlaySlideshowScreen() {
                                         pagination={{ clickable: true }}
                                         spaceBetween={16}
                                         slidesPerView={1}
-                                        className={imagesLoaded ? '' : 'invisible h-0'}
+                                        className={imagesLoaded ? 'play-slideshow-swiper' : 'play-slideshow-swiper invisible h-0'}
                                         style={imagesLoaded && maxImageHeight > 0 ? { minHeight: maxImageHeight } : undefined}
                                     >
                                         {slideshow.image_urls.map((url, index) => (

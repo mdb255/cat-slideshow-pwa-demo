@@ -11,12 +11,16 @@
     },
     "dependencies": {
         "@ionic/react": "^8.0.0",
+        "@ionic/react-router": "^8.7.17",
         "@reduxjs/toolkit": "^2.9.0",
+        "@types/react-router-dom": "^5.3.3",
+        "history": "^4.10.1",
         "ionicons": "^8.0.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-redux": "^9.2.0",
-        "react-router-dom": "^7.9.3",
+        "react-router": "^5.3.4",
+        "react-router-dom": "^5.3.4",
         "swiper": "^11.0.0"
     },
     "devDependencies": {

@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { IonPage, IonContent, IonItem, IonInput, IonLabel, IonButton, IonSpinner, IonText } from '@ionic/react'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
 import { setAuthenticated } from '../../rtk/auth/auth-slice'
 
 function LoginScreen() {
-    const navigate = useNavigate()
+    const history = useHistory()
     const dispatch = useDispatch()
 
     const [email, setEmail] = useState('')
@@ -27,7 +27,7 @@ function LoginScreen() {
         try {
             const result = await login({ email: email.trim(), password }).unwrap()
             dispatch(setAuthenticated({ accessToken: result.access_token }))
-            navigate('/welcome')
+            history.push('/welcome')
         } catch (err: unknown) {
             console.error('Login failed:', err)
             const detail = err && typeof err === 'object' && 'data' in err && err.data && typeof err.data === 'object' && 'detail' in err.data
