@@ -5,16 +5,25 @@ import BackButton from './back-button'
 interface TopNavBarProps {
     children?: ReactNode
     showBackButton?: boolean
+    startContent?: ReactNode
 }
 
-function TopNavBar({ children, showBackButton = true }: TopNavBarProps) {
+function TopNavBar({
+    children,
+    showBackButton = true,
+    startContent,
+}: TopNavBarProps) {
     return (
         <IonHeader>
             <IonToolbar color="primary">
-                {showBackButton && (
+                {showBackButton ? (
                     <IonButtons slot="start">
                         <BackButton />
                     </IonButtons>
+                ) : (
+                    startContent && (
+                        <IonButtons slot="start">{startContent}</IonButtons>
+                    )
                 )}
                 {children && (
                     <IonButtons slot="end" className="flex items-center gap-1">
