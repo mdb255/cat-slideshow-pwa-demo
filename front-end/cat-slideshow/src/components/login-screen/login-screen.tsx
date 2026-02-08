@@ -1,23 +1,12 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import {
-    Container,
-    Box,
-    Typography,
-    TextField,
-    Button,
-    CircularProgress,
-    Alert,
-    Link as MuiLink,
-} from '@mui/material'
+import { IonPage, IonContent, IonItem, IonInput, IonLabel, IonButton, IonSpinner, IonText } from '@ionic/react'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
 import { setAuthenticated } from '../../rtk/auth/auth-slice'
-import { stylesWithLabels } from '../../modules/util/styles-util'
-import theme from '../../modules/theme/theme'
 
 function LoginScreen() {
-    const navigate = useNavigate()
+    const history = useHistory()
     const dispatch = useDispatch()
 
     const [email, setEmail] = useState('')
@@ -38,123 +27,88 @@ function LoginScreen() {
         try {
             const result = await login({ email: email.trim(), password }).unwrap()
             dispatch(setAuthenticated({ accessToken: result.access_token }))
-            navigate('/welcome')
-        } catch (err: any) {
+            history.push('/welcome')
+        } catch (err: unknown) {
             console.error('Login failed:', err)
-            setError(err.data?.detail || 'Login failed. Please check your credentials.')
+            const detail = err && typeof err === 'object' && 'data' in err && err.data && typeof err.data === 'object' && 'detail' in err.data
+                ? String((err.data as { detail?: unknown }).detail)
+                : ''
+            setError(detail || 'Login failed. Please check your credentials.')
         }
     }
 
-    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(e.target.value)
+    const handleEmailChange = (e: CustomEvent) => {
+        setEmail((e.target as HTMLIonInputElement).value as string ?? '')
         if (error) setError('')
     }
 
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value)
+    const handlePasswordChange = (e: CustomEvent) => {
+        setPassword((e.target as HTMLIonInputElement).value as string ?? '')
         if (error) setError('')
     }
 
     return (
-        <Container sx={styles.container} maxWidth="sm">
-            <Box sx={styles.formContainer}>
-                <Typography variant="h4" component="h1" sx={styles.title}>
-                    Sign In
-                </Typography>
+        <IonPage>
+            <IonContent className="ion-padding flex flex-col items-center justify-center min-h-full">
+                <div className="w-full max-w-[400px]">
+                    <h1 className="text-2xl font-semibold text-center mb-6">
+                        Sign In
+                    </h1>
 
-                <Box component="form" onSubmit={handleSubmit} sx={styles.form}>
-                    <TextField
-                        autoFocus
-                        required
-                        fullWidth
-                        label="Email"
-                        type="email"
-                        value={email}
-                        onChange={handleEmailChange}
-                        margin="normal"
-                        disabled={isLoading}
-                    />
-                    <TextField
-                        required
-                        fullWidth
-                        label="Password"
-                        type="password"
-                        value={password}
-                        onChange={handlePasswordChange}
-                        margin="normal"
-                        disabled={isLoading}
-                    />
+                    <form onSubmit={handleSubmit} className="mb-6">
+                        <IonItem className="mb-3">
+                            <IonLabel position="stacked">Email</IonLabel>
+                            <IonInput
+                                type="email"
+                                value={email}
+                                onIonInput={handleEmailChange}
+                                required
+                                disabled={isLoading}
+                                autofocus
+                            />
+                        </IonItem>
+                        <IonItem className="mb-3">
+                            <IonLabel position="stacked">Password</IonLabel>
+                            <IonInput
+                                type="password"
+                                value={password}
+                                onIonInput={handlePasswordChange}
+                                required
+                                disabled={isLoading}
+                            />
+                        </IonItem>
 
-                    {error && (
-                        <Alert severity="error" sx={styles.errorAlert}>
-                            {error}
-                        </Alert>
-                    )}
-
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        size="large"
-                        disabled={isLoading || !email.trim() || !password.trim()}
-                        sx={styles.submitButton}
-                    >
-                        {isLoading ? (
-                            <CircularProgress size={24} />
-                        ) : (
-                            'Sign In'
+                        {error && (
+                            <IonText color="danger" className="block mt-2">
+                                <p className="text-sm">{error}</p>
+                            </IonText>
                         )}
-                    </Button>
-                </Box>
 
-                <Box sx={styles.signupLink}>
-                    <Typography variant="body2">
+                        <IonButton
+                            type="submit"
+                            expand="block"
+                            size="large"
+                            disabled={isLoading || !email.trim() || !password.trim()}
+                            className="mt-4 mb-2"
+                        >
+                            {isLoading ? (
+                                <IonSpinner name="crescent" />
+                            ) : (
+                                'Sign In'
+                            )}
+                        </IonButton>
+                    </form>
+
+                    <p className="text-center text-sm">
                         New user?{' '}
-                        <MuiLink component={Link} to="/sign-up" sx={styles.link}>
+                        <Link to="/sign-up" className="font-medium text-primary">
                             Sign up
-                        </MuiLink>
-                    </Typography>
-                </Box>
-            </Box>
-        </Container>
+                        </Link>
+                    </p>
+                </div>
+            </IonContent>
+        </IonPage>
     )
 }
-
-let styles = {
-    container: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        padding: theme.spacing(2),
-    },
-    formContainer: {
-        width: '100%',
-        maxWidth: 400,
-    },
-    title: {
-        textAlign: 'center',
-        marginBottom: theme.spacing(4),
-        fontWeight: 600,
-    },
-    form: {
-        marginBottom: theme.spacing(3),
-    },
-    errorAlert: {
-        marginTop: theme.spacing(2),
-    },
-    submitButton: {
-        marginTop: theme.spacing(3),
-        marginBottom: theme.spacing(2),
-    },
-    signupLink: {
-        textAlign: 'center',
-    },
-    link: {
-        fontWeight: 500,
-    },
-}
-
-styles = stylesWithLabels(styles, 'LoginScreen')
 
 export default LoginScreen

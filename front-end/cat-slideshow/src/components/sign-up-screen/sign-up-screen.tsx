@@ -1,14 +1,12 @@
 import { useState } from 'react'
-import { Box, Typography, Container, Button, TextField, Alert, IconButton, InputAdornment } from '@mui/material'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
-import { useNavigate } from 'react-router-dom'
-import { stylesWithLabels } from '../../modules/util/styles-util'
-import theme from '../../modules/theme/theme'
+import { IonPage, IonContent, IonItem, IonInput, IonLabel, IonButton, IonSpinner, IonText, IonIcon } from '@ionic/react'
+import { eyeOffOutline, eyeOutline } from 'ionicons/icons'
+import { useHistory } from 'react-router-dom'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
 import TopNavBar from '../design-system/top-nav-bar'
 
 function SignUpScreen() {
-    const navigate = useNavigate()
+    const history = useHistory()
 
     const [step, setStep] = useState<1 | 2>(1)
     const [email, setEmail] = useState('')
@@ -42,8 +40,11 @@ function SignUpScreen() {
         try {
             await signup({ email: email.trim(), password }).unwrap()
             setStep(2)
-        } catch (err: any) {
-            setError(err?.data?.detail || 'Sign up failed')
+        } catch (err: unknown) {
+            const detail = err && typeof err === 'object' && 'data' in err && err.data && typeof err.data === 'object' && 'detail' in err.data
+                ? String((err.data as { detail?: unknown }).detail)
+                : ''
+            setError(detail || 'Sign up failed')
         }
     }
 
@@ -56,9 +57,12 @@ function SignUpScreen() {
         }
         try {
             await confirmSignup({ email: email.trim(), confirmation_code: confirmationCode.trim() }).unwrap()
-            navigate('/login')
-        } catch (err: any) {
-            setError(err?.data?.detail || 'Confirmation failed')
+            history.push('/login')
+        } catch (err: unknown) {
+            const detail = err && typeof err === 'object' && 'data' in err && err.data && typeof err.data === 'object' && 'detail' in err.data
+                ? String((err.data as { detail?: unknown }).detail)
+                : ''
+            setError(detail || 'Confirmation failed')
         }
     }
 
@@ -66,146 +70,111 @@ function SignUpScreen() {
     const isStep1Valid = () => isValidEmail(email) && password.length > 0 && confirmPassword.length > 0 && !passwordsMismatch
 
     return (
-        <>
+        <IonPage>
             <TopNavBar />
-            <Container sx={styles.container} maxWidth="sm">
-                <Box sx={styles.content}>
-                    <Typography variant="h4" component="h1" sx={styles.title}>
-                        {step === 1 ? 'Create your account' : 'Confirm your email'}
-                    </Typography>
+            <IonContent className="ion-padding flex flex-col items-center min-h-full">
+                    <div className="w-full max-w-[440px]">
+                        <h1 className="text-2xl font-semibold text-center mb-6">
+                            {step === 1 ? 'Create your account' : 'Confirm your email'}
+                        </h1>
 
-                    {step === 1 ? (
-                        <Box component="form" onSubmit={handleSubmitStep1} sx={styles.form}>
-                            <TextField
-                                label="Email"
-                                type="email"
-                                fullWidth
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                margin="normal"
-                                disabled={isSigningUp}
-                            />
-                            <TextField
-                                label="Password"
-                                type={showPw ? 'text' : 'password'}
-                                fullWidth
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                margin="normal"
-                                disabled={isSigningUp}
-                                slotProps={{
-                                    input: {
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton onClick={() => setShowPw((s) => !s)} edge="end" aria-label="toggle password visibility">
-                                                    {showPw ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
-                                    },
-                                }}
-                            />
-                            <TextField
-                                label="Confirm Password"
-                                type={showConfirmPw ? 'text' : 'password'}
-                                fullWidth
-                                required
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                margin="normal"
-                                disabled={isSigningUp}
-                                error={passwordsMismatch}
-                                helperText={passwordsMismatch ? "Passwords don't match" : undefined}
-                                slotProps={{
-                                    input: {
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton onClick={() => setShowConfirmPw((s) => !s)} edge="end" aria-label="toggle confirm password visibility">
-                                                    {showConfirmPw ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
-                                    },
-                                }}
-                            />
+                        {step === 1 ? (
+                            <form onSubmit={handleSubmitStep1} className="flex flex-col gap-4">
+                                <IonItem>
+                                    <IonLabel position="stacked">Email</IonLabel>
+                                    <IonInput
+                                        type="email"
+                                        value={email}
+                                        onIonInput={(e) => setEmail((e.target as HTMLIonInputElement).value as string ?? '')}
+                                        required
+                                        disabled={isSigningUp}
+                                    />
+                                </IonItem>
+                                <IonItem>
+                                    <IonLabel position="stacked">Password</IonLabel>
+                                    <IonInput
+                                        type={showPw ? 'text' : 'password'}
+                                        value={password}
+                                        onIonInput={(e) => setPassword((e.target as HTMLIonInputElement).value as string ?? '')}
+                                        required
+                                        disabled={isSigningUp}
+                                    />
+                                    <IonButton fill="clear" slot="end" onClick={() => setShowPw((s) => !s)} aria-label="toggle password visibility">
+                                        <IonIcon icon={showPw ? eyeOffOutline : eyeOutline} />
+                                    </IonButton>
+                                </IonItem>
+                                <IonItem className={passwordsMismatch ? 'ion-invalid' : ''}>
+                                    <IonLabel position="stacked">Confirm Password</IonLabel>
+                                    <IonInput
+                                        type={showConfirmPw ? 'text' : 'password'}
+                                        value={confirmPassword}
+                                        onIonInput={(e) => setConfirmPassword((e.target as HTMLIonInputElement).value as string ?? '')}
+                                        required
+                                        disabled={isSigningUp}
+                                    />
+                                    <IonButton fill="clear" slot="end" onClick={() => setShowConfirmPw((s) => !s)} aria-label="toggle confirm password visibility">
+                                        <IonIcon icon={showConfirmPw ? eyeOffOutline : eyeOutline} />
+                                    </IonButton>
+                                    {passwordsMismatch && (
+                                        <IonText color="danger" slot="helper">
+                                            <p className="text-sm">Passwords don&apos;t match</p>
+                                        </IonText>
+                                    )}
+                                </IonItem>
 
-                            {error && <Alert severity="error" sx={styles.error}>{error}</Alert>}
+                                {error && (
+                                    <IonText color="danger">
+                                        <p className="text-sm">{error}</p>
+                                    </IonText>
+                                )}
 
-                            <Box sx={styles.actions}>
-                                <Button type="submit" variant="contained" size="large" disabled={isSigningUp || !isStep1Valid()}>
-                                    {isSigningUp ? 'Creating account…' : 'Sign Up'}
-                                </Button>
-                            </Box>
-                        </Box>
-                    ) : (
-                        <Box component="form" onSubmit={handleSubmitStep2} sx={styles.form}>
-                            <TextField
-                                label="Email"
-                                fullWidth
-                                value={email}
-                                margin="normal"
-                                disabled
-                            />
-                            <TextField
-                                label="Confirmation Code"
-                                fullWidth
-                                required
-                                value={confirmationCode}
-                                onChange={(e) => setConfirmationCode(e.target.value)}
-                                margin="normal"
-                                disabled={isConfirming}
-                            />
+                                <div className="flex justify-center mt-2">
+                                    <IonButton
+                                        type="submit"
+                                        size="large"
+                                        disabled={isSigningUp || !isStep1Valid()}
+                                    >
+                                        {isSigningUp ? <IonSpinner name="crescent" /> : 'Sign Up'}
+                                    </IonButton>
+                                </div>
+                            </form>
+                        ) : (
+                            <form onSubmit={handleSubmitStep2} className="flex flex-col gap-4">
+                                <IonItem>
+                                    <IonLabel position="stacked">Email</IonLabel>
+                                    <IonInput type="email" value={email} disabled />
+                                </IonItem>
+                                <IonItem>
+                                    <IonLabel position="stacked">Confirmation Code</IonLabel>
+                                    <IonInput
+                                        value={confirmationCode}
+                                        onIonInput={(e) => setConfirmationCode((e.target as HTMLIonInputElement).value as string ?? '')}
+                                        required
+                                        disabled={isConfirming}
+                                    />
+                                </IonItem>
 
-                            {error && <Alert severity="error" sx={styles.error}>{error}</Alert>}
+                                {error && (
+                                    <IonText color="danger">
+                                        <p className="text-sm">{error}</p>
+                                    </IonText>
+                                )}
 
-                            <Box sx={styles.actions}>
-                                <Button type="submit" variant="contained" size="large" disabled={isConfirming || !confirmationCode.trim()}>
-                                    {isConfirming ? 'Confirming…' : 'Confirm'}
-                                </Button>
-                            </Box>
-                        </Box>
-                    )}
-                </Box>
-            </Container>
-        </>
+                                <div className="flex justify-center mt-2">
+                                    <IonButton
+                                        type="submit"
+                                        size="large"
+                                        disabled={isConfirming || !confirmationCode.trim()}
+                                    >
+                                        {isConfirming ? <IonSpinner name="crescent" /> : 'Confirm'}
+                                    </IonButton>
+                                </div>
+                            </form>
+                        )}
+                    </div>
+                </IonContent>
+        </IonPage>
     )
 }
-
-let styles = {
-    container: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: 'calc(100vh - 64px)',
-        padding: theme.spacing(4),
-    },
-    content: {
-        width: '100%',
-        maxWidth: 440,
-    },
-    title: {
-        fontWeight: 600,
-        textAlign: 'center',
-        marginBottom: theme.spacing(3),
-    },
-    form: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: theme.spacing(2),
-    },
-    actions: {
-        display: 'flex',
-        gap: theme.spacing(2),
-        justifyContent: 'center',
-        marginTop: theme.spacing(1),
-    },
-    error: {
-        mt: 1,
-    },
-}
-
-styles = stylesWithLabels(styles, 'SignUpScreen')
 
 export default SignUpScreen

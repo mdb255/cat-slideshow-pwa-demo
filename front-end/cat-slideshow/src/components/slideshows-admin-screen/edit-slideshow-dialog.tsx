@@ -1,24 +1,25 @@
 import { useState, useEffect } from 'react'
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    TextField,
-    CircularProgress,
-    Box,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-} from '@mui/material'
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonItem,
+    IonInput,
+    IonTextarea,
+    IonLabel,
+    IonSelect,
+    IonSelectOption,
+    IonButton,
+    IonSpinner,
+    IonButtons,
+} from '@ionic/react'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
 import type { SlideshowCreate, SlideshowUpdate } from '../../rtk/slideshows/slideshow-model'
+import BackButton from '../design-system/back-button'
 import ConfirmCloseDialog from '../reusable/confirm-close-dialog'
 import ImagePicker from '../reusable/image-picker'
-import { stylesWithLabels } from '../../modules/util/styles-util'
-import theme from '../../modules/theme/theme'
 
 interface EditSlideshowDialogProps {
     open: boolean
@@ -29,7 +30,6 @@ interface EditSlideshowDialogProps {
 function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialogProps) {
     const isEditMode = slideshowId !== undefined
 
-    // RTK Query hooks
     const { data: slideshow, isLoading: isLoadingSlideshow } = catSlideshowApi.useGetSlideshowQuery(slideshowId!, {
         skip: !isEditMode,
     })
@@ -38,17 +38,13 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
     const [createSlideshow, { isLoading: isCreating }] = catSlideshowApi.useCreateSlideshowMutation()
     const [updateSlideshow, { isLoading: isUpdating }] = catSlideshowApi.useUpdateSlideshowMutation()
 
-    // Form state
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [catId, setCatId] = useState<number | ''>('')
     const [selectedImageUrls, setSelectedImageUrls] = useState<string[]>([])
-
-    // Track if form is dirty
     const [isDirty, setIsDirty] = useState(false)
     const [showConfirmClose, setShowConfirmClose] = useState(false)
 
-    // Initialize form when dialog opens or slideshow data loads
     useEffect(() => {
         if (open) {
             if (isEditMode && slideshow) {
@@ -58,7 +54,6 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
                 setSelectedImageUrls(slideshow.image_urls)
                 setIsDirty(false)
             } else if (!isEditMode) {
-                // Reset form for create mode
                 setTitle('')
                 setDescription('')
                 setCatId('')
@@ -67,23 +62,6 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
             }
         }
     }, [open, isEditMode, slideshow])
-
-    const handleFieldChange = (setter: (value: string) => void) => (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        setter(e.target.value)
-        setIsDirty(true)
-    }
-
-    const handleCatChange = (e: any) => {
-        setCatId(e.target.value)
-        setIsDirty(true)
-    }
-
-    const handleImageUrlsChange = (urls: string[]) => {
-        setSelectedImageUrls(urls)
-        setIsDirty(true)
-    }
 
     const handleClose = () => {
         if (isDirty) {
@@ -119,9 +97,14 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
 
             setIsDirty(false)
             onClose()
-        } catch (error) {
-            console.error('Failed to save slideshow:', error)
+        } catch (err) {
+            console.error('Failed to save slideshow:', err)
         }
+    }
+
+    const handleImageUrlsChange = (urls: string[]) => {
+        setSelectedImageUrls(urls)
+        setIsDirty(true)
     }
 
     const isLoading = isLoadingSlideshow || isLoadingCats || isLoadingCatImages || isCreating || isUpdating
@@ -129,75 +112,83 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
 
     return (
         <>
-            <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle>{isEditMode ? 'Edit Slideshow' : 'Create Slideshow'}</DialogTitle>
-                <DialogContent>
+            <IonModal isOpen={open} onDidDismiss={handleClose}>
+                <IonHeader>
+                    <IonToolbar>
+                        <IonButtons slot="start">
+                            <BackButton onClick={handleClose} tooltip="Cancel" />
+                        </IonButtons>
+                        <IonTitle className="ion-text-start">{isEditMode ? 'Edit Slideshow' : 'Create Slideshow'}</IonTitle>
+                        <IonButtons slot="end">
+                            <IonButton onClick={handleSubmit} disabled={!canSubmit}>
+                                {isLoading ? (
+                                    <IonSpinner name="crescent" />
+                                ) : isEditMode ? (
+                                    'Save'
+                                ) : (
+                                    'Create'
+                                )}
+                            </IonButton>
+                        </IonButtons>
+                    </IonToolbar>
+                </IonHeader>
+                <IonContent className="ion-padding">
                     {isLoadingSlideshow || isLoadingCats ? (
-                        <Box sx={styles.loadingContainer}>
-                            <CircularProgress />
-                        </Box>
+                        <div className="flex justify-center items-center py-12">
+                            <IonSpinner name="crescent" />
+                        </div>
                     ) : (
-                        <Box sx={styles.formContainer}>
-                            <TextField
-                                autoFocus
-                                required
-                                label="Title"
-                                fullWidth
-                                value={title}
-                                onChange={handleFieldChange(setTitle)}
-                                margin="normal"
-                            />
-                            <TextField
-                                label="Description"
-                                fullWidth
-                                multiline
-                                rows={3}
-                                value={description}
-                                onChange={handleFieldChange(setDescription)}
-                                margin="normal"
-                            />
-                            <FormControl fullWidth margin="normal" required>
-                                <InputLabel id="cat-select-label">Cat</InputLabel>
-                                <Select
-                                    labelId="cat-select-label"
+                        <div className="flex flex-col gap-3 pt-2">
+                            <IonItem>
+                                <IonLabel position="stacked">Title *</IonLabel>
+                                <IonInput
+                                    value={title}
+                                    onIonInput={(e) => {
+                                        setTitle((e.target as HTMLIonInputElement).value as string ?? '')
+                                        setIsDirty(true)
+                                    }}
+                                    required
+                                    autofocus
+                                />
+                            </IonItem>
+                            <IonItem>
+                                <IonLabel position="stacked">Description</IonLabel>
+                                <IonTextarea
+                                    value={description}
+                                    onIonInput={(e) => {
+                                        setDescription((e.target as HTMLIonTextareaElement).value as string ?? '')
+                                        setIsDirty(true)
+                                    }}
+                                    rows={3}
+                                />
+                            </IonItem>
+                            <IonItem>
+                                <IonLabel position="stacked">Cat *</IonLabel>
+                                <IonSelect
                                     value={catId}
-                                    label="Cat"
-                                    onChange={handleCatChange}
+                                    onIonChange={(e) => {
+                                        setCatId(e.detail.value as number)
+                                        setIsDirty(true)
+                                    }}
+                                    placeholder="Select cat"
+                                    interface="popover"
                                 >
-                                    {cats?.map(cat => (
-                                        <MenuItem key={cat.id} value={cat.id}>
+                                    {cats?.map((cat) => (
+                                        <IonSelectOption key={cat.id} value={cat.id}>
                                             {cat.name}
-                                        </MenuItem>
+                                        </IonSelectOption>
                                     ))}
-                                </Select>
-                            </FormControl>
+                                </IonSelect>
+                            </IonItem>
                             <ImagePicker
                                 availableImageUrls={catImages || []}
                                 selectedImageUrls={selectedImageUrls}
                                 onChange={handleImageUrlsChange}
                             />
-                        </Box>
+                        </div>
                     )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} disabled={isLoading}>
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handleSubmit}
-                        variant="contained"
-                        disabled={!canSubmit}
-                    >
-                        {isLoading ? (
-                            <CircularProgress size={24} />
-                        ) : isEditMode ? (
-                            'Save'
-                        ) : (
-                            'Create'
-                        )}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                </IonContent>
+            </IonModal>
 
             <ConfirmCloseDialog
                 open={showConfirmClose}
@@ -208,19 +199,4 @@ function EditSlideshowDialog({ open, slideshowId, onClose }: EditSlideshowDialog
     )
 }
 
-let styles = {
-    loadingContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: theme.spacing(4),
-    },
-    formContainer: {
-        paddingTop: theme.spacing(1),
-    },
-}
-
-styles = stylesWithLabels(styles, 'EditSlideshowDialog')
-
 export default EditSlideshowDialog
-

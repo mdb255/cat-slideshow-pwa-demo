@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Box, CircularProgress } from '@mui/material'
+import { IonSpinner } from '@ionic/react'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
 import { setAuthenticated, setInitialized, clearAuth } from '../../rtk/auth/auth-slice'
 import { RootState } from '../../rtk/store'
@@ -25,11 +25,9 @@ function AuthInitializer({ children }: AuthInitializerProps) {
 
         const initializeAuth = async () => {
             try {
-                // Attempt to resume session using cookie
                 const result = await resume().unwrap()
                 dispatch(setAuthenticated({ accessToken: result.access_token }))
-            } catch (error) {
-                // No valid session cookie, user needs to log in
+            } catch {
                 dispatch(clearAuth())
             } finally {
                 dispatch(setInitialized())
@@ -41,22 +39,13 @@ function AuthInitializer({ children }: AuthInitializerProps) {
 
     if (!isInitialized) {
         return (
-            <Box sx={styles.loadingContainer}>
-                <CircularProgress size={60} />
-            </Box>
+            <div className="flex justify-center items-center min-h-screen">
+                <IonSpinner name="crescent" />
+            </div>
         )
     }
 
     return <>{children}</>
-}
-
-let styles = {
-    loadingContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-    },
 }
 
 export default AuthInitializer

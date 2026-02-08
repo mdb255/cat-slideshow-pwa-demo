@@ -1,4 +1,4 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material'
+import { IonAlert } from '@ionic/react'
 
 interface ConfirmCloseDialogProps {
     open: boolean
@@ -8,20 +8,17 @@ interface ConfirmCloseDialogProps {
 
 function ConfirmCloseDialog({ open, onConfirm, onCancel }: ConfirmCloseDialogProps) {
     return (
-        <Dialog open={open} onClose={onCancel}>
-            <DialogTitle>Discard Changes?</DialogTitle>
-            <DialogContent>
-                You have unsaved changes. Are you sure you want to discard them?
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onCancel}>Cancel</Button>
-                <Button onClick={onConfirm} color="error">
-                    Discard
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <IonAlert
+            isOpen={open}
+            onDidDismiss={() => onCancel()}
+            header="Discard Changes?"
+            message="You have unsaved changes. Are you sure you want to discard them?"
+            buttons={[
+                { text: 'Cancel', role: 'cancel', handler: () => onCancel() },
+                { text: 'Discard', role: 'destructive', handler: () => onConfirm() },
+            ]}
+        />
     )
 }
 
 export default ConfirmCloseDialog
-

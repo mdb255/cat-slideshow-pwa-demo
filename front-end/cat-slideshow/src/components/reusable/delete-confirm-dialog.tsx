@@ -1,4 +1,4 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, DialogContentText } from '@mui/material'
+import { IonAlert } from '@ionic/react'
 
 interface DeleteConfirmDialogProps {
     open: boolean
@@ -13,25 +13,20 @@ function DeleteConfirmDialog({
     itemName,
     itemType = 'item',
     onConfirm,
-    onCancel
+    onCancel,
 }: DeleteConfirmDialogProps) {
     return (
-        <Dialog open={open} onClose={onCancel}>
-            <DialogTitle>Delete {itemType}?</DialogTitle>
-            <DialogContent>
-                <DialogContentText>
-                    Are you sure you want to delete <strong>{itemName}</strong>? This action cannot be undone.
-                </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onCancel}>Cancel</Button>
-                <Button onClick={onConfirm} color="error" variant="contained">
-                    Delete
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <IonAlert
+            isOpen={open}
+            onDidDismiss={() => onCancel()}
+            header={`Delete ${itemType}?`}
+            message={`Are you sure you want to delete ${itemName || 'this item'}? This action cannot be undone.`}
+            buttons={[
+                { text: 'Cancel', role: 'cancel', handler: () => onCancel() },
+                { text: 'Delete', role: 'destructive', handler: () => onConfirm() },
+            ]}
+        />
     )
 }
 
 export default DeleteConfirmDialog
-

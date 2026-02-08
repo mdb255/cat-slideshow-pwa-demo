@@ -1,20 +1,16 @@
 import { useState } from 'react'
-import { Container, Typography, Box, IconButton, CircularProgress, Alert } from '@mui/material'
-import { Add as AddIcon } from '@mui/icons-material'
+import { IonPage, IonContent, IonSpinner, IonText, IonButton, IonIcon } from '@ionic/react'
+import { add } from 'ionicons/icons'
 import TopNavBar from '../design-system/top-nav-bar'
 import SlideshowCard from './slideshow-card'
 import EditSlideshowDialog from './edit-slideshow-dialog'
 import DeleteConfirmDialog from '../reusable/delete-confirm-dialog'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
-import { stylesWithLabels } from '../../modules/util/styles-util'
-import theme from '../../modules/theme/theme'
 
 function SlideshowsAdminScreen() {
-    // Fetch slideshows
     const { data: slideshows, isLoading, error } = catSlideshowApi.useGetSlideshowsQuery({})
     const [deleteSlideshow] = catSlideshowApi.useDeleteSlideshowMutation()
 
-    // Dialog state
     const [editDialogOpen, setEditDialogOpen] = useState(false)
     const [slideshowIdToEdit, setSlideshowIdToEdit] = useState<number | undefined>(undefined)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -46,8 +42,8 @@ function SlideshowsAdminScreen() {
                 await deleteSlideshow(slideshowIdToDelete).unwrap()
                 setDeleteDialogOpen(false)
                 setSlideshowIdToDelete(undefined)
-            } catch (error) {
-                console.error('Failed to delete slideshow:', error)
+            } catch (err) {
+                console.error('Failed to delete slideshow:', err)
             }
         }
     }
@@ -57,48 +53,38 @@ function SlideshowsAdminScreen() {
         setSlideshowIdToDelete(undefined)
     }
 
-    const slideshowToDelete = slideshows?.find(slideshow => slideshow.id === slideshowIdToDelete)
+    const slideshowToDelete = slideshows?.find((s) => s.id === slideshowIdToDelete)
 
     return (
-        <>
-            <TopNavBar>
-                <IconButton
-                    color="inherit"
-                    aria-label="add slideshow"
-                    onClick={handleAddSlideshow}
-                >
-                    <AddIcon />
-                </IconButton>
+        <IonPage>
+            <TopNavBar title="Slideshows Admin">
+                <IonButton fill="clear" color="light" onClick={handleAddSlideshow} aria-label="add slideshow">
+                    <IonIcon icon={add} />
+                </IonButton>
             </TopNavBar>
-            <Container maxWidth="lg" sx={styles.container}>
-                <Box sx={styles.contentBox}>
-                    <Typography variant="h2" component="h1" gutterBottom>
-                        Slideshows Admin
-                    </Typography>
-
+            <IonContent className="ion-padding">
+                <div className="mt-6 max-w-4xl mx-auto">
                     {isLoading && (
-                        <Box sx={styles.loadingContainer}>
-                            <CircularProgress />
-                        </Box>
+                        <div className="flex justify-center py-8">
+                            <IonSpinner name="crescent" />
+                        </div>
                     )}
 
                     {error && (
-                        <Alert severity="error" sx={styles.alert}>
-                            Failed to load slideshows. Please try again.
-                        </Alert>
+                        <IonText color="danger" className="block mt-4">
+                            <p>Failed to load slideshows. Please try again.</p>
+                        </IonText>
                     )}
 
                     {!isLoading && !error && slideshows && slideshows.length === 0 && (
-                        <Box sx={styles.emptyContainer}>
-                            <Typography variant="body1" color="text.secondary">
-                                No slideshows yet. Click the + button to add your first slideshow!
-                            </Typography>
-                        </Box>
+                        <div className="text-center py-8 text-secondary">
+                            <p>No slideshows yet. Click the + button to add your first slideshow!</p>
+                        </div>
                     )}
 
                     {!isLoading && !error && slideshows && slideshows.length > 0 && (
-                        <Box sx={styles.slideshowsListContainer}>
-                            {slideshows.map(slideshow => (
+                        <div className="mt-6 space-y-0">
+                            {slideshows.map((slideshow) => (
                                 <SlideshowCard
                                     key={slideshow.id}
                                     slideshow={slideshow}
@@ -106,10 +92,10 @@ function SlideshowsAdminScreen() {
                                     onDelete={() => handleDeleteSlideshow(slideshow.id)}
                                 />
                             ))}
-                        </Box>
+                        </div>
                     )}
-                </Box>
-            </Container>
+                </div>
+            </IonContent>
 
             <EditSlideshowDialog
                 open={editDialogOpen}
@@ -124,34 +110,8 @@ function SlideshowsAdminScreen() {
                 onConfirm={handleConfirmDelete}
                 onCancel={handleCancelDelete}
             />
-        </>
+        </IonPage>
     )
 }
-
-let styles = {
-    container: {
-        padding: theme.spacing(4),
-    },
-    contentBox: {
-        marginTop: theme.spacing(4),
-    },
-    loadingContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        padding: theme.spacing(4),
-    },
-    alert: {
-        marginTop: theme.spacing(2),
-    },
-    emptyContainer: {
-        textAlign: 'center' as const,
-        padding: theme.spacing(4),
-    },
-    slideshowsListContainer: {
-        marginTop: theme.spacing(4),
-    },
-}
-
-styles = stylesWithLabels(styles, 'SlideshowsAdminScreen')
 
 export default SlideshowsAdminScreen

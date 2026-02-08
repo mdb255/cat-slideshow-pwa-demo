@@ -1,214 +1,130 @@
 import { useState, useEffect } from 'react'
-import { Container, Typography, Box, CircularProgress, Alert } from '@mui/material'
+import { IonPage, IonContent, IonSpinner, IonText } from '@ionic/react'
 import { useParams } from 'react-router-dom'
-import Slider from 'react-slick'
-import 'slick-carousel/slick/slick.css'
-import 'slick-carousel/slick/slick-theme.css'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/pagination'
 import TopNavBar from '../design-system/top-nav-bar'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
-import { stylesWithLabels } from '../../modules/util/styles-util'
-import theme from '../../modules/theme/theme'
+
+const FALLBACK_IMAGE_SRC =
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600"%3E%3Crect fill="%23ddd" width="800" height="600"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle" font-size="24"%3EImage Failed to Load%3C/text%3E%3C/svg%3E'
 
 function PlaySlideshowScreen() {
     const { id } = useParams<{ id: string }>()
     const slideshowId = id ? parseInt(id, 10) : undefined
 
-    // Fetch slideshow data
     const { data: slideshow, isLoading, error } = catSlideshowApi.useGetSlideshowQuery(slideshowId!, {
         skip: !slideshowId,
     })
 
-    // Track max height of images
-    const [maxImageHeight, setMaxImageHeight] = useState<number>(0)
+    const [maxImageHeight, setMaxImageHeight] = useState(300)
     const [imagesLoaded, setImagesLoaded] = useState(false)
 
-    // Preload images and calculate max height
     useEffect(() => {
         if (slideshow && slideshow.image_urls.length > 0) {
             const loadImage = (url: string) => {
                 return new Promise<number>((resolve) => {
                     const img = new Image()
                     img.onload = () => {
-                        // Calculate height at max width constraint
-                        const maxWidth = window.innerWidth * 0.9 // 90% of window width
+                        const maxWidth = window.innerWidth * 0.9
                         const aspectRatio = img.height / img.width
                         const constrainedHeight = Math.min(img.height, maxWidth * aspectRatio)
-                        resolve(Math.min(constrainedHeight, window.innerHeight * 0.7)) // Max 70vh
+                        resolve(Math.min(constrainedHeight, window.innerHeight * 0.7))
                     }
-                    img.onerror = () => resolve(300) // Default height for failed images
+                    img.onerror = () => resolve(300)
                     img.src = url
                 })
             }
 
             Promise.all(slideshow.image_urls.map(loadImage)).then((heights) => {
-                const maxH = Math.max(...heights, 300) // Minimum 300px
-                setMaxImageHeight(maxH)
+                setMaxImageHeight(Math.max(...heights, 300))
                 setImagesLoaded(true)
             })
         }
     }, [slideshow])
 
-    // Slider settings
-    const sliderSettings = {
-        dots: true,
-        infinite: false,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        swipe: true,
-        arrows: false,
-        adaptiveHeight: false,
-        dotsClass: 'slick-dots slick-dots-bottom',
-    }
-
     return (
-        <>
+        <IonPage>
             <TopNavBar />
-            <Container maxWidth="lg" sx={styles.container}>
-                <Box sx={styles.contentBox}>
+            <IonContent className="ion-padding">
+                <div className="mt-6 max-w-4xl mx-auto">
                     {isLoading && (
-                        <Box sx={styles.loadingContainer}>
-                            <CircularProgress />
-                        </Box>
+                        <div className="flex justify-center py-8">
+                            <IonSpinner name="crescent" />
+                        </div>
                     )}
 
                     {error && (
-                        <Alert severity="error" sx={styles.alert}>
-                            Failed to load slideshow. Please try again.
-                        </Alert>
+                        <IonText color="danger" className="block mt-4">
+                            <p>Failed to load slideshow. Please try again.</p>
+                        </IonText>
                     )}
 
                     {!isLoading && !error && !slideshow && (
-                        <Alert severity="warning" sx={styles.alert}>
-                            Slideshow not found.
-                        </Alert>
+                        <IonText color="warning" className="block mt-4">
+                            <p>Slideshow not found.</p>
+                        </IonText>
                     )}
 
                     {!isLoading && !error && slideshow && (
                         <>
-                            <Typography variant="h2" component="h1" gutterBottom sx={styles.title}>
+                            <h1 className="text-3xl font-semibold text-center text-black mb-2">
                                 {slideshow.title}
-                            </Typography>
-
+                            </h1>
                             {slideshow.description && (
-                                <Typography variant="body1" color="text.secondary" gutterBottom sx={styles.description}>
+                                <p className="text-center mb-6" style={{ color: 'var(--app-subtitle-color)' }}>
                                     {slideshow.description}
-                                </Typography>
+                                </p>
                             )}
 
                             {slideshow.image_urls.length === 0 ? (
-                                <Alert severity="info" sx={styles.alert}>
-                                    This slideshow has no images yet.
-                                </Alert>
+                                <IonText color="medium" className="block mt-4">
+                                    <p>This slideshow has no images yet.</p>
+                                </IonText>
                             ) : (
-                                <Box
-                                    sx={{
-                                        ...styles.sliderContainer,
-                                        ...(imagesLoaded && maxImageHeight > 0 && {
-                                            '& .slick-list, & .slick-track': {
-                                                height: `${maxImageHeight}px`,
-                                            },
-                                        }),
-                                    }}
-                                >
+                                <div className="mt-6">
                                     {!imagesLoaded && (
-                                        <Box sx={styles.loadingContainer}>
-                                            <CircularProgress size={30} />
-                                        </Box>
+                                        <div className="flex justify-center py-8">
+                                            <IonSpinner name="crescent" />
+                                        </div>
                                     )}
-                                    <Slider {...sliderSettings}>
+                                    <Swiper
+                                        modules={[Pagination]}
+                                        pagination={{ clickable: true }}
+                                        spaceBetween={16}
+                                        slidesPerView={1}
+                                        className={imagesLoaded ? 'play-slideshow-swiper' : 'play-slideshow-swiper invisible h-0'}
+                                        style={imagesLoaded && maxImageHeight > 0 ? { minHeight: maxImageHeight } : undefined}
+                                    >
                                         {slideshow.image_urls.map((url, index) => (
-                                            <Box
-                                                key={index}
-                                                sx={{
-                                                    ...styles.slideBox,
-                                                    ...(imagesLoaded && maxImageHeight > 0 && {
-                                                        height: `${maxImageHeight}px`,
-                                                    }),
-                                                }}
-                                            >
-                                                <Box
-                                                    component="img"
-                                                    src={url}
-                                                    alt={`${slideshow.title} - Image ${index + 1}`}
-                                                    sx={styles.slideImage}
-                                                    onError={(e: any) => {
-                                                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600"%3E%3Crect fill="%23ddd" width="800" height="600"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle" font-size="24"%3EImage Failed to Load%3C/text%3E%3C/svg%3E'
-                                                    }}
-                                                />
-                                            </Box>
+                                            <SwiperSlide key={index}>
+                                                <div
+                                                    className="flex justify-center items-center w-full"
+                                                    style={imagesLoaded && maxImageHeight > 0 ? { minHeight: maxImageHeight } : undefined}
+                                                >
+                                                    <img
+                                                        src={url}
+                                                        alt={`${slideshow.title} - Image ${index + 1}`}
+                                                        className="max-w-full max-h-[70vh] w-auto h-auto object-contain rounded-lg mx-auto block"
+                                                        style={imagesLoaded && maxImageHeight > 0 ? { maxHeight: maxImageHeight } : undefined}
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).src = FALLBACK_IMAGE_SRC
+                                                        }}
+                                                    />
+                                                </div>
+                                            </SwiperSlide>
                                         ))}
-                                    </Slider>
-                                </Box>
+                                    </Swiper>
+                                </div>
                             )}
                         </>
                     )}
-                </Box>
-            </Container>
-        </>
+                </div>
+            </IonContent>
+        </IonPage>
     )
 }
 
-let styles = {
-    container: {
-        padding: theme.spacing(4),
-    },
-    contentBox: {
-        marginTop: theme.spacing(4),
-    },
-    loadingContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        padding: theme.spacing(4),
-    },
-    alert: {
-        marginTop: theme.spacing(2),
-    },
-    title: {
-        textAlign: 'center' as const,
-    },
-    description: {
-        textAlign: 'center' as const,
-        marginBottom: theme.spacing(4),
-    },
-    sliderContainer: {
-        marginTop: theme.spacing(4),
-        '& .slick-list': {
-            marginLeft: theme.spacing(-4),
-            marginRight: theme.spacing(-4),
-        },
-        '& .slick-slide > div': {
-            paddingLeft: theme.spacing(4),
-            paddingRight: theme.spacing(4),
-        },
-        '& .slick-dots': {
-            position: 'relative' as const,
-            bottom: 'auto',
-            marginTop: theme.spacing(3),
-        },
-        '& .slick-dots li button:before': {
-            fontSize: 12,
-        },
-    },
-    slideBox: {
-        display: 'flex !important' as any,
-        justifyContent: 'center',
-        alignItems: 'center',
-        outline: 'none',
-    },
-    slideImage: {
-        maxWidth: '100%',
-        maxHeight: '70vh',
-        width: 'auto',
-        height: 'auto',
-        objectFit: 'contain' as const,
-        borderRadius: theme.shape.borderRadius,
-        margin: '0 auto',
-        display: 'block',
-    },
-}
-
-styles = stylesWithLabels(styles, 'PlaySlideshowScreen')
-
 export default PlaySlideshowScreen
-

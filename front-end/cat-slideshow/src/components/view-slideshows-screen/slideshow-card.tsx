@@ -1,8 +1,6 @@
-import { Card, CardContent, Typography, Box, IconButton } from '@mui/material'
-import { ChevronRight as ChevronRightIcon } from '@mui/icons-material'
+import { IonCard, IonCardContent, IonIcon } from '@ionic/react'
+import { chevronForward } from 'ionicons/icons'
 import type { Slideshow } from '../../rtk/slideshows/slideshow-model'
-import { stylesWithLabels } from '../../modules/util/styles-util'
-import theme from '../../modules/theme/theme'
 
 interface SlideshowCardProps {
     slideshow: Slideshow
@@ -11,52 +9,18 @@ interface SlideshowCardProps {
 
 function SlideshowCard({ slideshow, onClick }: SlideshowCardProps) {
     return (
-        <Card sx={styles.card} onClick={onClick}>
-            <CardContent sx={styles.cardContent}>
-                <Box sx={styles.infoContainer}>
-                    <Typography variant="h6" component="div">
-                        {slideshow.title}
-                    </Typography>
+        <IonCard button onClick={onClick} className="w-full mb-4 cursor-pointer">
+            <IonCardContent className="justify-between items-center py-4">
+                <div className="flex-1 min-w-0">
+                    <h2 className="text-lg font-semibold text-black">{slideshow.title}</h2>
                     {slideshow.description && (
-                        <Typography variant="body2" color="text.secondary">
-                            {slideshow.description}
-                        </Typography>
+                        <p className="text-sm mt-1" style={{ color: 'var(--app-subtitle-color)' }}>{slideshow.description}</p>
                     )}
-                </Box>
-                <IconButton
-                    aria-label="view slideshow"
-                    edge="end"
-                >
-                    <ChevronRightIcon />
-                </IconButton>
-            </CardContent>
-        </Card>
+                </div>
+                <IonIcon icon={chevronForward} aria-label="view slideshow" className="text-2xl shrink-0 ml-2" />
+            </IonCardContent>
+        </IonCard>
     )
 }
 
-let styles = {
-    card: {
-        width: '100%',
-        marginBottom: theme.spacing(2),
-        cursor: 'pointer',
-        '&:hover': {
-            backgroundColor: theme.palette.action.hover,
-        },
-    },
-    cardContent: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        '&:last-child': {
-            paddingBottom: theme.spacing(2),
-        },
-    },
-    infoContainer: {
-        flex: 1,
-    },
-}
-
-styles = stylesWithLabels(styles, 'SlideshowCard')
-
 export default SlideshowCard
-

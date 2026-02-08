@@ -1,20 +1,18 @@
 import { useState } from 'react'
 import {
-    Box,
-    IconButton,
-    Typography,
-    Dialog,
-    AppBar,
-    Toolbar,
-    Button,
-    ImageList,
-    ImageListItem,
-    ImageListItemBar,
-    Checkbox,
-} from '@mui/material'
-import { MoreHoriz as MoreHorizIcon } from '@mui/icons-material'
-import { stylesWithLabels } from '../../modules/util/styles-util'
-import theme from '../../modules/theme/theme'
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonButton,
+    IonButtons,
+    IonCheckbox,
+    IonGrid,
+    IonRow,
+    IonCol,
+} from '@ionic/react'
+import BackButton from '../design-system/back-button'
 
 interface ImagePickerProps {
     availableImageUrls: string[]
@@ -22,6 +20,9 @@ interface ImagePickerProps {
     onChange: (urls: string[]) => void
     maxSelection?: number
 }
+
+const FALLBACK_IMG =
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23ddd" width="100" height="100"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EError%3C/text%3E%3C/svg%3E'
 
 function ImagePicker({
     availableImageUrls,
@@ -48,165 +49,95 @@ function ImagePicker({
     }
 
     const handleToggleImage = (url: string) => {
-        setTempSelection(prev => {
+        setTempSelection((prev) => {
             const isSelected = prev.includes(url)
             if (isSelected) {
-                return prev.filter(u => u !== url)
-            } else {
-                if (maxSelection && prev.length >= maxSelection) {
-                    return prev
-                }
-                return [...prev, url]
+                return prev.filter((u) => u !== url)
             }
+            if (maxSelection && prev.length >= maxSelection) {
+                return prev
+            }
+            return [...prev, url]
         })
     }
 
     return (
         <>
-            <Box sx={styles.collapsedContainer}>
-                <Typography variant="body1" sx={styles.selectionText}>
+            <div className="flex items-center justify-between p-4 border border-solid border-gray-300 rounded-lg mt-4 mb-4">
+                <span className="flex-grow text-sm">
                     {selectedImageUrls.length} {selectedImageUrls.length === 1 ? 'image' : 'images'} selected
-                </Typography>
-                <IconButton
-                    onClick={handleOpen}
-                    aria-label="open image picker"
-                    size="small"
-                >
-                    <MoreHorizIcon />
-                </IconButton>
-            </Box>
+                </span>
+                <IonButton fill="clear" size="small" onClick={handleOpen} aria-label="open image picker">
+                    Pick images
+                </IonButton>
+            </div>
 
-            <Dialog
-                fullScreen
-                open={dialogOpen}
-                onClose={handleCancel}
-            >
-                <Box sx={styles.dialogContent}>
-                    {availableImageUrls.length === 0 ? (
-                        <Box sx={styles.emptyState}>
-                            <Typography variant="body1" color="text.secondary">
-                                No images available
-                            </Typography>
-                        </Box>
-                    ) : (
-                        <ImageList cols={2} gap={16} sx={styles.imageList}>
-                            {availableImageUrls.map(url => {
-                                const isSelected = tempSelection.includes(url)
-                                const isDisabled = !!maxSelection && tempSelection.length >= maxSelection && !isSelected
-
-                                return (
-                                    <ImageListItem key={url} sx={styles.imageListItem}>
-                                        <img
-                                            src={url}
-                                            alt="Cat"
-                                            loading="lazy"
-                                            style={{ cursor: 'pointer', height: '100%', objectFit: 'cover' }}
-                                            onClick={() => !isDisabled && handleToggleImage(url)}
-                                            onError={(e: any) => {
-                                                e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23ddd" width="100" height="100"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EError%3C/text%3E%3C/svg%3E'
-                                            }}
-                                        />
-                                        <ImageListItemBar
-                                            sx={styles.imageListItemBar}
-                                            position="top"
-                                            actionIcon={
-                                                <Checkbox
-                                                    checked={isSelected}
-                                                    onChange={() => handleToggleImage(url)}
-                                                    disabled={isDisabled}
-                                                    sx={styles.checkbox}
-                                                />
-                                            }
-                                            actionPosition="right"
-                                        />
-                                    </ImageListItem>
-                                )
-                            })}
-                        </ImageList>
-                    )}
-                </Box>
-
-                <AppBar position="fixed" color="default" sx={styles.bottomBar}>
-                    <Toolbar sx={styles.toolbar}>
-                        <Typography variant="body1" sx={styles.selectedText}>
-                            Selected ({tempSelection.length})
-                        </Typography>
-                        <Box sx={styles.actionButtons}>
-                            <Button onClick={handleCancel} color="inherit">
-                                Cancel
-                            </Button>
-                            <Button onClick={handleUse} variant="contained" color="primary">
+            <IonModal isOpen={dialogOpen} onDidDismiss={handleCancel}>
+                <IonHeader>
+                    <IonToolbar>
+                        <IonButtons slot="start">
+                            <BackButton onClick={handleCancel} tooltip="Cancel" />
+                        </IonButtons>
+                        <IonTitle className="ion-text-start">Pick images</IonTitle>
+                        <IonButtons slot="end">
+                            <IonButton onClick={handleUse}>
                                 Use
-                            </Button>
-                        </Box>
-                    </Toolbar>
-                </AppBar>
-            </Dialog>
+                            </IonButton>
+                        </IonButtons>
+                    </IonToolbar>
+                </IonHeader>
+                <IonContent className="ion-padding">
+                    {availableImageUrls.length === 0 ? (
+                        <div className="flex justify-center items-center min-h-[200px] text-secondary">
+                            <p>No images available</p>
+                        </div>
+                    ) : (
+                        <IonGrid className="py-4">
+                            <IonRow className="gap-4">
+                                {availableImageUrls.map((url) => {
+                                    const isSelected = tempSelection.includes(url)
+                                    const isDisabled =
+                                        !!maxSelection &&
+                                        tempSelection.length >= maxSelection &&
+                                        !isSelected
+
+                                    return (
+                                        <IonCol
+                                            key={url}
+                                            size="6"
+                                            sizeMd="4"
+                                            className="relative cursor-pointer"
+                                            onClick={() => !isDisabled && handleToggleImage(url)}
+                                        >
+                                            <div className="aspect-square rounded overflow-hidden bg-gray-100 relative">
+                                                <img
+                                                    src={url}
+                                                    alt="Cat"
+                                                    loading="lazy"
+                                                    className="w-full h-full object-cover block"
+                                                    onError={(e) => {
+                                                        (e.target as HTMLImageElement).src = FALLBACK_IMG
+                                                    }}
+                                                />
+                                                <div className="absolute top-1 right-1">
+                                                    <IonCheckbox
+                                                        checked={isSelected}
+                                                        onIonChange={() => handleToggleImage(url)}
+                                                        disabled={isDisabled}
+                                                        className="bg-white/90 rounded"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </IonCol>
+                                    )
+                                })}
+                            </IonRow>
+                        </IonGrid>
+                    )}
+                </IonContent>
+            </IonModal>
         </>
     )
 }
 
-let styles = {
-    collapsedContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: theme.spacing(2),
-        border: `1px solid ${theme.palette.divider}`,
-        borderRadius: theme.shape.borderRadius,
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-    },
-    selectionText: {
-        flexGrow: 1,
-    },
-    dialogContent: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column' as const,
-        paddingBottom: theme.spacing(8), // Space for bottom bar
-    },
-    emptyState: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-    },
-    imageList: {
-        padding: theme.spacing(2),
-    },
-    imageListItem: {
-        cursor: 'pointer',
-        position: 'relative' as const,
-    },
-    imageListItemBar: {
-        background: 'transparent',
-    },
-    checkbox: {
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        '&:hover': {
-            backgroundColor: 'rgba(255, 255, 255, 1)',
-        },
-    },
-    bottomBar: {
-        top: 'auto',
-        bottom: 0,
-    },
-    toolbar: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    selectedText: {
-        fontWeight: 'bold' as const,
-    },
-    actionButtons: {
-        display: 'flex',
-        gap: theme.spacing(2),
-    },
-}
-
-styles = stylesWithLabels(styles, 'ImagePicker')
-
 export default ImagePicker
-

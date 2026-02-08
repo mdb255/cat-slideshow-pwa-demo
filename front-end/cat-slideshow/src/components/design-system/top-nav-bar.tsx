@@ -1,40 +1,62 @@
-import { AppBar, Toolbar, Box } from '@mui/material'
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonMenuToggle, IonIcon } from '@ionic/react'
 import { ReactNode } from 'react'
+import { menu } from 'ionicons/icons'
 import BackButton from './back-button'
-import { stylesWithLabels } from '../../modules/util/styles-util'
 
 interface TopNavBarProps {
     children?: ReactNode
     showBackButton?: boolean
+    /** Menu id for hamburger trigger (tab landing screens). Shown on the left when showBackButton is false. */
+    menuId?: string
+    /** Left-aligned title (e.g. for tab landing screens). Shown to the right of the menu button when present. */
+    title?: ReactNode
+    startContent?: ReactNode
 }
 
-function TopNavBar({ children, showBackButton = true }: TopNavBarProps) {
+function TopNavBar({
+    children,
+    showBackButton = true,
+    menuId,
+    title,
+    startContent,
+}: TopNavBarProps) {
+    const startSlotContent = showBackButton ? (
+        <BackButton />
+    ) : (
+        <>
+            {menuId && (
+                <IonMenuToggle menu={menuId}>
+                    <IonButton
+                        fill="clear"
+                        color="light"
+                        aria-label="Menu"
+                    >
+                        <IonIcon icon={menu} />
+                    </IonButton>
+                </IonMenuToggle>
+            )}
+            {!title && startContent}
+        </>
+    )
     return (
-        <AppBar position="fixed" elevation={1}>
-            <Toolbar>
-                {showBackButton && <BackButton />}
-                <Box sx={styles.spacer} />
-                {children && (
-                    <Box sx={styles.actionsContainer}>
-                        {children}
-                    </Box>
+        <IonHeader>
+            <IonToolbar>
+                {startSlotContent && (
+                    <IonButtons slot="start" className="gap-1 items-center">
+                        {startSlotContent}
+                    </IonButtons>
                 )}
-            </Toolbar>
-        </AppBar>
+                {title != null && title !== '' && (
+                    <IonTitle className="ion-text-start">{title}</IonTitle>
+                )}
+                {children && (
+                    <IonButtons slot="end" className="flex items-center gap-1">
+                        {children}
+                    </IonButtons>
+                )}
+            </IonToolbar>
+        </IonHeader>
     )
 }
-
-let styles = {
-    spacer: {
-        flexGrow: 1,
-    },
-    actionsContainer: {
-        display: 'flex',
-        gap: 1,
-        alignItems: 'center',
-    },
-}
-
-styles = stylesWithLabels(styles, 'TopNavBar')
 
 export default TopNavBar
