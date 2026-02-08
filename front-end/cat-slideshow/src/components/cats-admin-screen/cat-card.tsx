@@ -11,7 +11,7 @@ interface CatCardProps {
 function CatCard({ cat, onEdit, onDelete }: CatCardProps) {
     return (
         <IonCard className="w-full mb-4">
-            <IonCardContent className="flex flex-nowrap justify-between items-center gap-3 py-4">
+            <IonCardContent className="flex justify-between items-center py-4">
                 <div className="flex-1 min-w-0">
                     <h2 className="text-lg font-semibold text-black">{cat.name}</h2>
                     {cat.breed && (
