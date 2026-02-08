@@ -23,8 +23,8 @@
     --app-subtitle-color: #666;
 }
 
-/* Override Ionic defaults to work better with Tailwind utilities */
-ion-card-content {
+/* Override Ionic defaults (display: block) so Tailwind flex utilities work on ion-card-content */
+ion-card-content[class] {
     display: flex;
 }
 
