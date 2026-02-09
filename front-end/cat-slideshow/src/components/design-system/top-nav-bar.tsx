@@ -20,28 +20,26 @@ function TopNavBar({
     title,
     startContent,
 }: TopNavBarProps) {
+    const hasStartContent = showBackButton || !!menuId || (!!startContent && !title)
     const startSlotContent = showBackButton ? (
         <BackButton />
-    ) : (
-        <>
-            {menuId && (
-                <IonMenuToggle menu={menuId}>
-                    <IonButton
-                        fill="clear"
-                        color="light"
-                        aria-label="Menu"
-                    >
-                        <IonIcon icon={menu} />
-                    </IonButton>
-                </IonMenuToggle>
-            )}
-            {!title && startContent}
-        </>
-    )
+    ) : menuId ? (
+        <IonMenuToggle menu={menuId}>
+            <IonButton
+                fill="clear"
+                color="light"
+                aria-label="Menu"
+            >
+                <IonIcon icon={menu} />
+            </IonButton>
+        </IonMenuToggle>
+    ) : startContent && !title ? (
+        startContent
+    ) : null
     return (
         <IonHeader>
-            <IonToolbar>
-                {startSlotContent && (
+            <IonToolbar className={!hasStartContent ? 'toolbar-no-start' : undefined}>
+                {hasStartContent && (
                     <IonButtons slot="start" className="gap-1 items-center">
                         {startSlotContent}
                     </IonButtons>

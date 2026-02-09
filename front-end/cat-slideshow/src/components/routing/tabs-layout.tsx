@@ -14,7 +14,7 @@ import {
     IonHeader,
     IonToolbar,
 } from '@ionic/react'
-import { home, homeOutline, create, createOutline, eye, eyeOutline, power } from 'ionicons/icons'
+import { home, homeOutline, create, createOutline, film, filmOutline, power } from 'ionicons/icons'
 import WelcomeScreen from '../welcome-screen/welcome-screen'
 import AuthorDataScreen from '../author-data-screen/author-data-screen'
 import ViewSlideshowsScreen from '../view-slideshows-screen/view-slideshows-screen'
@@ -111,7 +111,7 @@ function TabsLayout() {
                         <IonLabel>Author</IonLabel>
                     </IonTabButton>
                     <IonTabButton tab="view" href="/view-slideshows">
-                        <IonIcon icon={location.pathname === '/view-slideshows' ? eye : eyeOutline} />
+                        <IonIcon icon={location.pathname === '/view-slideshows' ? film : filmOutline} />
                         <IonLabel>View</IonLabel>
                     </IonTabButton>
                 </IonTabBar>

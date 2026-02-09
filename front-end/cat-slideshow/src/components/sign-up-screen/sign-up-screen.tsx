@@ -71,13 +71,10 @@ function SignUpScreen() {
 
     return (
         <IonPage>
-            <TopNavBar />
-            <IonContent className="ion-padding flex flex-col items-center min-h-full">
+            <TopNavBar title={step === 1 ? 'Create Account' : 'Confirm Email'} />
+            <IonContent scrollY={false} className="ion-padding">
+                <div className="flex flex-col items-center justify-center h-full">
                     <div className="w-full max-w-[440px]">
-                        <h1 className="text-2xl font-semibold text-center mb-6">
-                            {step === 1 ? 'Create your account' : 'Confirm your email'}
-                        </h1>
-
                         {step === 1 ? (
                             <form onSubmit={handleSubmitStep1} className="flex flex-col gap-4">
                                 <IonItem>
@@ -128,10 +125,10 @@ function SignUpScreen() {
                                     </IonText>
                                 )}
 
-                                <div className="flex justify-center mt-2">
+                                <div className="flex justify-center mt-4 mb-2">
                                     <IonButton
                                         type="submit"
-                                        size="large"
+                                        className="extra-px"
                                         disabled={isSigningUp || !isStep1Valid()}
                                     >
                                         {isSigningUp ? <IonSpinner name="crescent" /> : 'Sign Up'}
@@ -160,10 +157,10 @@ function SignUpScreen() {
                                     </IonText>
                                 )}
 
-                                <div className="flex justify-center mt-2">
+                                <div className="flex justify-center mt-4 mb-2">
                                     <IonButton
                                         type="submit"
-                                        size="large"
+                                        className="extra-px"
                                         disabled={isConfirming || !confirmationCode.trim()}
                                     >
                                         {isConfirming ? <IonSpinner name="crescent" /> : 'Confirm'}
@@ -172,7 +169,8 @@ function SignUpScreen() {
                             </form>
                         )}
                     </div>
-                </IonContent>
+                </div>
+            </IonContent>
         </IonPage>
     )
 }

@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import { IonPage, IonContent, IonItem, IonInput, IonLabel, IonButton, IonSpinner, IonText } from '@ionic/react'
 import { catSlideshowApi } from '../../rtk/cat-slideshow-api'
 import { setAuthenticated } from '../../rtk/auth/auth-slice'
+import TopNavBar from '../design-system/top-nav-bar'
 
 function LoginScreen() {
     const history = useHistory()
@@ -49,62 +50,61 @@ function LoginScreen() {
 
     return (
         <IonPage>
-            <IonContent className="ion-padding flex flex-col items-center justify-center min-h-full">
-                <div className="w-full max-w-[400px]">
-                    <h1 className="text-2xl font-semibold text-center mb-6">
-                        Sign In
-                    </h1>
+            <TopNavBar title="Log In" showBackButton={false} />
+            <IonContent scrollY={false} className="ion-padding">
+                <div className="flex flex-col items-center justify-center h-full">
+                    <div className="w-full max-w-[400px]">
+                        <form onSubmit={handleSubmit} className="mb-6">
+                            <IonItem className="mb-3">
+                                <IonLabel position="stacked">Email</IonLabel>
+                                <IonInput
+                                    type="email"
+                                    value={email}
+                                    onIonInput={handleEmailChange}
+                                    required
+                                    disabled={isLoading}
+                                    autofocus
+                                />
+                            </IonItem>
+                            <IonItem className="mb-3">
+                                <IonLabel position="stacked">Password</IonLabel>
+                                <IonInput
+                                    type="password"
+                                    value={password}
+                                    onIonInput={handlePasswordChange}
+                                    required
+                                    disabled={isLoading}
+                                />
+                            </IonItem>
 
-                    <form onSubmit={handleSubmit} className="mb-6">
-                        <IonItem className="mb-3">
-                            <IonLabel position="stacked">Email</IonLabel>
-                            <IonInput
-                                type="email"
-                                value={email}
-                                onIonInput={handleEmailChange}
-                                required
-                                disabled={isLoading}
-                                autofocus
-                            />
-                        </IonItem>
-                        <IonItem className="mb-3">
-                            <IonLabel position="stacked">Password</IonLabel>
-                            <IonInput
-                                type="password"
-                                value={password}
-                                onIonInput={handlePasswordChange}
-                                required
-                                disabled={isLoading}
-                            />
-                        </IonItem>
-
-                        {error && (
-                            <IonText color="danger" className="block mt-2">
-                                <p className="text-sm">{error}</p>
-                            </IonText>
-                        )}
-
-                        <IonButton
-                            type="submit"
-                            expand="block"
-                            size="large"
-                            disabled={isLoading || !email.trim() || !password.trim()}
-                            className="mt-4 mb-2"
-                        >
-                            {isLoading ? (
-                                <IonSpinner name="crescent" />
-                            ) : (
-                                'Sign In'
+                            {error && (
+                                <IonText color="danger" className="block mt-2">
+                                    <p className="text-sm">{error}</p>
+                                </IonText>
                             )}
-                        </IonButton>
-                    </form>
 
-                    <p className="text-center text-sm">
-                        New user?{' '}
-                        <Link to="/sign-up" className="font-medium text-primary">
-                            Sign up
-                        </Link>
-                    </p>
+                            <div className="flex justify-center mt-4 mb-2">
+                                <IonButton
+                                    type="submit"
+                                    className="extra-px"
+                                    disabled={isLoading || !email.trim() || !password.trim()}
+                                >
+                                    {isLoading ? (
+                                        <IonSpinner name="crescent" />
+                                    ) : (
+                                        'Log In'
+                                    )}
+                                </IonButton>
+                            </div>
+                        </form>
+
+                        <p className="text-center text-md">
+                            New user?{' '}
+                            <Link to="/sign-up" className="font-medium text-primary">
+                                Sign up
+                            </Link>
+                        </p>
+                    </div>
                 </div>
             </IonContent>
         </IonPage>
