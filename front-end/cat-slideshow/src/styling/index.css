@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 /* Theme bridge: Tailwind semantic colors reference Ionic CSS variables (from ionic-theme.css) */
 @theme {
     --color-primary: var(--ion-color-primary);

@@ -1,4 +1,4 @@
-import { IonAlert } from '@ionic/react'
+import OsIonAlert from '../design-system/os-ion-alert'
 
 interface DeleteConfirmDialogProps {
     open: boolean
@@ -16,7 +16,7 @@ function DeleteConfirmDialog({
     onCancel,
 }: DeleteConfirmDialogProps) {
     return (
-        <IonAlert
+        <OsIonAlert
             isOpen={open}
             onDidDismiss={() => onCancel()}
             header={`Delete ${itemType}?`}

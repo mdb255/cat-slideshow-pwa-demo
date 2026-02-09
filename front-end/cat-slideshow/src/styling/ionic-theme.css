@@ -42,9 +42,31 @@ ion-toolbar ion-back-button {
     color: #000000;
 }
 
-/* Left-aligned toolbar title: add start padding so it doesn’t overlap [slot="start"] buttons */
-ion-toolbar ion-title.ion-text-start {
+/* Larger icon buttons in toolbar */
+ion-toolbar ion-button {
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    --padding-start: 14px;
+    --padding-end: 14px;
+}
+
+ion-toolbar ion-icon {
+    font-size: 26px;
+}
+
+/* Larger toolbar title */
+ion-toolbar ion-title {
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
+/* Left-aligned toolbar title: add start padding only when [slot="start"] is present */
+ion-toolbar:not(.toolbar-no-start) ion-title.ion-text-start {
     padding-inline-start: 3rem;
+}
+
+ion-toolbar.toolbar-no-start ion-title.ion-text-start {
+    padding-inline-start: 1rem;
 }
 
 /* Tab bar – white background with black icons/labels */
@@ -61,6 +83,10 @@ ion-tab-button {
     transition: background-color 0.2s ease;
 }
 
+ion-tab-bar ion-label {
+    font-size: 0.7rem;
+}
+
 ion-tab-button.tab-selected {
     font-weight: 600;
 }
@@ -70,24 +96,13 @@ ion-button {
     --border-radius: 9999px;
 }
 
-/* Play slideshow – swiper pagination dots use primary purple, sit below image */
-.play-slideshow-swiper {
-    --swiper-pagination-color: var(--ion-color-primary);
-    padding-bottom: 2.5rem;
+/* Extra horizontal padding for primary actions (e.g. Log In) */
+ion-button.extra-px {
+    --padding-start: 30px;
+    --padding-end: 30px;
 }
 
-/* Fade transition for route changes */
-.route-transition,
-.route-transition-enter {
-    animation: fadeIn 0.25s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+/* OsIonAlert: button labels not forced to uppercase */
+.os-alert-buttons-normal .alert-button {
+    text-transform: none;
 }

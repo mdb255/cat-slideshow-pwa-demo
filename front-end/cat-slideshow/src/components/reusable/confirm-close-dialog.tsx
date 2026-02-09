@@ -1,4 +1,4 @@
-import { IonAlert } from '@ionic/react'
+import OsIonAlert from '../design-system/os-ion-alert'
 
 interface ConfirmCloseDialogProps {
     open: boolean
@@ -8,7 +8,7 @@ interface ConfirmCloseDialogProps {
 
 function ConfirmCloseDialog({ open, onConfirm, onCancel }: ConfirmCloseDialogProps) {
     return (
-        <IonAlert
+        <OsIonAlert
             isOpen={open}
             onDidDismiss={() => onCancel()}
             header="Discard Changes?"
